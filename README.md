@@ -26,9 +26,6 @@ Vibeo는 전 세계 사용자를 연결하고 창의성을 공유하는 혁신�
 ### 🏠 동적 홈 화면
 - 매끄러운 애니메이션이 적용된 리스트로 최신 동영상 탐색.
 
-### 🔄 Pull-to-Refresh Functionality
-- Refresh content effortlessly with a simple pull gesture.
-
 ### 🔄 당겨서 새로고침
 - 간단히 화면을 당겨서 콘텐츠를 최신 상태로 갱신.
 
