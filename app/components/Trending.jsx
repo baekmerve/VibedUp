@@ -6,7 +6,8 @@ import {
   View,
   Text,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { useState } from "react";
 import * as Animatable from "react-native-animatable";
 
 import { icons } from "../../constants";
@@ -31,16 +32,14 @@ const zoomOut = {
   },
 };
 
-const TrendingItem = ({ activeItem, item, setIsPlaying }) => {
+const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
-
-
 
   return (
     <Animatable.View
       className="mr-5"
       animation={activeItem === item.$id ? zoomIn : zoomOut}
-       duration={500}
+      duration={500}
     >
       {play ? (
         <Video
@@ -50,14 +49,9 @@ const TrendingItem = ({ activeItem, item, setIsPlaying }) => {
           useNativeControls
           shouldPlay
           onPlaybackStatusUpdate={(status) => {
-          if (status.isPlaying) {
-            setIsPlaying(true); // Notify the parent that a video is playing
-          } else if (!status.isPlaying && !status.didJustFinish) {
-            setIsPlaying(false); // Resume scrolling if the user pauses the video
-          } else if (status.didJustFinish) {
-            setPlay(false);
-            setIsPlaying(false); // Resume scrolling when the video finishes
-          }
+            if (status.didJustFinish) {
+              setPlay(false);
+            }
           }}
         />
       ) : (
@@ -66,7 +60,6 @@ const TrendingItem = ({ activeItem, item, setIsPlaying }) => {
           activeOpacity={0.7}
           onPress={() => {
             setPlay(true);
-            setIsPlaying(true); // Notify the parent that the video started playing
           }}
         >
           <ImageBackground
@@ -86,39 +79,13 @@ const TrendingItem = ({ activeItem, item, setIsPlaying }) => {
 };
 
 const Trending = ({ posts }) => {
-  //const [activeItem, setActiveItem] = useState(posts[1]);
-  // const viewableItemChanged = ({ viewableItems }) => {
-  //   if (viewableItemChanged.length > 0) {
-  //     setActiveItem(viewableItems[0].key);
-  //   }
-  // };
+  const [activeItem, setActiveItem] = useState(posts[1]);
 
-  const [activeItemIndex, setActiveItemIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false); // Track if a video is being played
-
-  const flatListRef = useRef(null);
-
-  useEffect(() => {
-    if (!isPlaying && posts.length > 0) {
-      const timer = setInterval(() => {
-        setActiveItemIndex((prevIndex) =>
-          prevIndex === posts.length - 1 ? 0 : prevIndex + 1
-        );
-      }, 3000); // Change slide every 3 seconds
-
-      return () => clearInterval(timer);
+  const viewableItemChanged = ({ viewableItems }) => {
+    if (viewableItemChanged.length > 0) {
+      setActiveItem(viewableItems[0].key);
     }
-  }, [posts, isPlaying]);
-
-  useEffect(() => {
-    if (posts.length > 0 && flatListRef.current && !isPlaying) {
-      flatListRef.current.scrollToIndex({
-        index: activeItemIndex,
-        animated: true,
-      });
-    }
-  }, [activeItemIndex, posts, isPlaying]);
-
+  };
 
   if (posts.length === 0) {
     return (
@@ -130,33 +97,15 @@ const Trending = ({ posts }) => {
 
   return (
     <FlatList
-      ref={flatListRef}
       data={posts}
       keyExtractor={(item) => item.$id}
       renderItem={({ item }) => (
-        //<TrendingItem activeItem={activeItem} item={item} />
-        <TrendingItem
-          activeItem={posts[activeItemIndex]?.$id}
-          item={item}
-          setIsPlaying={setIsPlaying}
-        />
+        <TrendingItem activeItem={activeItem} item={item} />
       )}
-      //onViewableItemsChanged={viewableItemChanged}
-      //viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
-      //contentOffset={{ x: 170 }}
+      onViewableItemsChanged={viewableItemChanged}
+      viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
+      contentOffset={{ x: 170 }}
       horizontal
-      pagingEnabled
-      showsHorizontalScrollIndicator={false}
-      onScrollToIndexFailed={(info) => {
-        try {
-          flatListRef.current?.scrollToIndex({
-            index: info.highestMeasuredFrameIndex || 0,
-            animated: true,
-          });
-        } catch (error) {
-          console.warn("ScrollToIndex failed:", error);
-        }
-      }}
     />
   );
 };

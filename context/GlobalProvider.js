@@ -35,8 +35,6 @@ const GlobalProvider = ({ children }) => {
     if (user) {
       const result = await toggleLikeVideo(user.$id, videoId); // Call the function from Appwrite
 
-
-
       if (result.status === "liked") {
         // If the video was liked, add it to the list
         setLikedVideos((prev) => [...prev, videoId]);
