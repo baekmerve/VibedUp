@@ -1,5 +1,5 @@
-import { Image, ScrollView, Text, View } from "react-native";
-import React from "react";
+import { Button, Image, ScrollView, Text, View } from "react-native";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
 import CustomButton from "./components/CustomButton";

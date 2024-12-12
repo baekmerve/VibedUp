@@ -1,54 +1,121 @@
-import { View, Text, FlatList, Image, RefreshControl } from "react-native";
-import React, {useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  RefreshControl,
+  Alert,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../components/SearchInput";
 import Trending from "../components/Trending";
 import EmptyState from "../components/EmptyState";
-import { fetchAllVideos, fetchLatestVideos } from "../../lib/appwrite";
+import {
+  deleteUserPost,
+  deleteUserVideo,
+  fetchAllPosts,
+  fetchAllVideos,
+  fetchLatestVideos,
+} from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../components/VideoCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import PostCard from "../components/PostCard";
 
 const Home = () => {
-  const { data: videos, refetch } = useAppwrite(fetchAllVideos);
+  const { data: videos, refetch: refetchVideos } = useAppwrite(fetchAllVideos);
+  const { data: posts, refetch: refetchPosts } = useAppwrite(fetchAllPosts);
 
-  const { data: latestPosts } = useAppwrite(fetchLatestVideos);
+  const { data: latestPosts, refetch: refetchLatestPosts } =
+    useAppwrite(fetchLatestVideos);
 
-  const { user, likedVideos, toggleLike } =
-    useGlobalContext();
+  const { user, likedVideos, toggleLike } = useGlobalContext();
 
   const [refreshing, setRefreshing] = useState(false);
 
-
+  const userContent = [
+    ...videos.map((item) => ({ ...item, type: "video" })),
+    ...posts.map((item) => ({ ...item, type: "post" })),
+  ];
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await refetchVideos();
+    await refetchPosts(); // Refetch all videos
+    await refetchLatestPosts(); // Refetch latest posts
     setRefreshing(false);
   };
+
+  // Function to handle deletion
+    const handleDelete = async (contentId, type) => {
+      try {
+        console.log(contentId);
+        Alert.alert(
+          "Delete Content",
+          `Are you sure you want to delete this ${type}?`,
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: async () => {
+                if (type === "video") {
+                  await deleteUserVideo(user.$id, contentId); // Call delete API for video
+                  await refetchVideos();
+                } else if (type === "post") {
+                  await deleteUserPost(user.$id, contentId); // Call delete API for post
+                  await refetchPosts();
+                }
+                alert(`${type} deleted successfully`);
+              },
+            },
+          ]
+        );
+      } catch (error) {
+        alert(error.message);
+      }
+    };
 
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={videos}
+        data={userContent}
         keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-          <View className="flex relative">
-            <VideoCard
-              title={item.title}
-              thumbnail={item.thumbnail}
-              video={item.video}
-              videoId={item.$id}
-              userId={user.$id}
-              creator={item.creator.username}
-              avatar={item.creator.avatar}
-              liked={likedVideos.includes(item.$id)}
-              onLikeToggle={() => toggleLike(item.$id)}
-              showLikeButton={true}
-            />
-          </View>
-        )}
+        renderItem={({ item }) => {
+          if (item.type === "post") {
+            return (
+              <PostCard
+                title={item.title}
+                content={item.content}
+                creatorName={item.creator.username}
+                avatar={item.creator.avatar}
+                onDelete={() => handleDelete(item.$id, "post")}
+                isCreator={item.creator.$id === user?.$id}
+              />
+            );
+          }
+          if (item.type === "video") {
+            return (
+              <View className="flex relative">
+                <VideoCard
+                  title={item.title}
+                  content={item.content}
+                  thumbnail={item.thumbnail}
+                  video={item.video}
+                  creatorName={item.creator.username}
+                  avatar={item.creator.avatar}
+                  savedVideo={likedVideos.includes(item.$id)}
+                  onLikeToggle={() => toggleLike(item.$id)}
+                  showLikeButton={item.creator.$id !== user?.$id}
+                  onDelete={() => handleDelete(item.$id)}
+                  isCreator={item.creator.$id === user?.$id}
+                />
+              </View>
+            );
+          }
+        }}
         ListHeaderComponent={() => (
           <View className="flex my-6 px-4 space-y-6">
             <View className="flex justify-between items-start flex-row mb-6">

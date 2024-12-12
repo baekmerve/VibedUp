@@ -13,6 +13,8 @@ import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
 import filledHeart from "../assets/icons/filledHeart.png";
 import emptyHeart from "../assets/icons/emptyHeart.png";
+import remove from "../assets/icons/remove.png";
+import removeBookmark from "../assets/icons/removeBookmark.png";
 
 export default {
   play,
@@ -30,4 +32,6 @@ export default {
   logout,
   eyeHide,
   eye,
+  remove,
+  removeBookmark,
 };

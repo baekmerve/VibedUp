@@ -34,11 +34,12 @@ const Saved = () => {
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
+            content={item.content}
             thumbnail={item.thumbnail}
             video={item.video}
-            creator={item.creator.username}
+            creatorName={item.creator.username}
             avatar={item.creator.avatar}
-            liked={likedVideos.includes(item.$id)}
+            savedVideo={likedVideos.includes(item.$id)}
             onLikeToggle={() => toggleLike(item.$id)}
             showLikeButton={true}
           />

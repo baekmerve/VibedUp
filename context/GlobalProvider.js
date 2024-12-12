@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, toggleLikeVideo } from "../lib/appwrite";
+import {
+  getCurrentUser,
+  getUserLikedVideos,
+  likeVideo,
+  unlikeVideo,
+} from "../lib/appwrite";
 
 const GlobalContext = createContext();
 
@@ -12,39 +17,51 @@ const GlobalProvider = ({ children }) => {
   const [likedVideos, setLikedVideos] = useState([]);
 
   useEffect(() => {
-    getCurrentUser()
-      .then(async (response) => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getCurrentUser();
         if (response) {
           setIsLoggedIn(true);
           setUser(response);
+
+          // Fetch liked videos
+          const likedVideosFromBackend = await getUserLikedVideos(response.$id);
+
+          const likedVideoIds = likedVideosFromBackend.map(
+            (video) => video.$id
+          );
+
+          setLikedVideos(likedVideoIds); // Set liked videos
         } else {
           setIsLoggedIn(false);
           setUser(null);
         }
-      })
-      .catch((error) => {
-      
-      })
-      .finally(() => {
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    fetchUserData();
   }, []);
 
-  // Toggle like for a video
-  const toggleLike = async (videoId) => {
-    if (user) {
-      const result = await toggleLikeVideo(user.$id, videoId); // Call the function from Appwrite
 
-      if (result.status === "liked") {
-        // If the video was liked, add it to the list
-        setLikedVideos((prev) => [...prev, videoId]);
-      } else if (result.status === "withdrawn") {
-        // If the like was withdrawn, remove it from the list
-        setLikedVideos((prev) => prev.filter((id) => id !== videoId));
+//function for Like a Video
+  const toggleLike = async (videoId) => {
+    if (!user) return; // Ensure user is logged in
+    try {
+      if (likedVideos.includes(videoId)) {
+        await unlikeVideo(user.$id, videoId); // Call `unlikeVideo`
+        setLikedVideos((prev) => prev.filter((id) => id !== videoId)); // Remove the video ID
+      } else {
+        await likeVideo(user.$id, videoId); // Call `likeVideo`
+        setLikedVideos((prev) => [...prev, videoId]); // Add the video ID
       }
+    } catch (error) {
+      console.error("Error toggling like:", error);
     }
   };
-
 
 
   return (
