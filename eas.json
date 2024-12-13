@@ -1,0 +1,43 @@
+{
+  "build": {
+    "development": {
+      "env": {
+        "APPWRITE_ENDPOINT": "https://cloud.appwrite.io/v1",
+        "APPWRITE_PLATFORM": "com.portfilio.aora",
+        "APPWRITE_PROJECT_ID": "674ea72b00297473c3c8",
+        "APPWRITE_DATABASE_ID": "674ea9390031e954f5e0",
+        "APPWRITE_USER_COLLECTION_ID": "674ea967000ea27c6409",
+        "APPWRITE_VIDEO_COLLECTION_ID": "674ea999002d31f3dbfe",
+        "APPWRITE_LIKES_COLLECTION_ID": "6752bf95002f2b5ff9a0",
+        "APPWRITE_POSTS_COLLECTION_ID": "67598580001d09b28b99",
+        "APPWRITE_STORAGE_ID": "674eaae800348e2653be"
+      }
+    },
+    "preview": {
+      "env": {
+        "APPWRITE_ENDPOINT": "https://cloud.appwrite.io/v1",
+        "APPWRITE_PLATFORM": "com.portfilio.aora",
+        "APPWRITE_PROJECT_ID": "674ea72b00297473c3c8",
+        "APPWRITE_DATABASE_ID": "674ea9390031e954f5e0",
+        "APPWRITE_USER_COLLECTION_ID": "674ea967000ea27c6409",
+        "APPWRITE_VIDEO_COLLECTION_ID": "674ea999002d31f3dbfe",
+        "APPWRITE_LIKES_COLLECTION_ID": "6752bf95002f2b5ff9a0",
+        "APPWRITE_POSTS_COLLECTION_ID": "67598580001d09b28b99",
+        "APPWRITE_STORAGE_ID": "674eaae800348e2653be"
+      }
+    },
+    "production": {
+      "env": {
+        "APPWRITE_ENDPOINT": "https://cloud.appwrite.io/v1",
+        "APPWRITE_PLATFORM": "com.portfilio.aora",
+        "APPWRITE_PROJECT_ID": "674ea72b00297473c3c8",
+        "APPWRITE_DATABASE_ID": "674ea9390031e954f5e0",
+        "APPWRITE_USER_COLLECTION_ID": "674ea967000ea27c6409",
+        "APPWRITE_VIDEO_COLLECTION_ID": "674ea999002d31f3dbfe",
+        "APPWRITE_LIKES_COLLECTION_ID": "6752bf95002f2b5ff9a0",
+        "APPWRITE_POSTS_COLLECTION_ID": "67598580001d09b28b99",
+        "APPWRITE_STORAGE_ID": "674eaae800348e2653be"
+      }
+    }
+  }
+}

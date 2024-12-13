@@ -18,10 +18,10 @@ const PostCard = ({
 
   return (
     <ScrollView>
-      <View className="flex-col items-center px-4 mb-14 ">
+      <View className="flex-col items-center px-4 my-2 ">
         <View className="flex-row gap-3 items-start">
           <View className="justify-center items-center flex-row flex-1">
-            <View className="w-[46px] h-[46px] rounded-lg justify-center items-center p-0.5">
+            <View className="w-[46px] h-[46px] rounded-lg justify-center items-center ">
               <Image
                 source={{ uri: avatar }}
                 className="w-full h-full rounded-full"
@@ -30,13 +30,13 @@ const PostCard = ({
             </View>
             <View className="justify-center flex-1 ml-3 gap-y-1">
               <Text
-                className="text-white font-psemibold text-sm"
+                className="text-brown font-psemibold text-sm"
                 numberOfLines={1}
               >
                 {title}
               </Text>
               <Text
-                className=" text-xs text-gray-100 font-pregular"
+                className=" text-xs text-brown font-pregular"
                 numberOfLines={1}
               >
                 {creatorName}
@@ -81,7 +81,7 @@ const PostCard = ({
           </View>
         )}
 
-        <View className="w-full h-60 rounded-xl mt-4 bg-[#1E1E2D] border border-[#232533] ">
+        <View className="w-full h-60 rounded-xl mt-4 bg-brown border border-brown ">
           <Text className=" text-white mt-3 px-3 font-pbold"> {title}</Text>
           <Text className="text-white mt-4 px-3"> {content}</Text>
         </View>

@@ -41,26 +41,28 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-paper h-full">
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
           <Image
             source={images.logo}
             resizeMode="contain"
-            className="w-[115px] h-[35px]"
+            className="w-[160px] h-[90px]"
           />
-          <Text className="font-psemibold text-2xl text-white mt-10 text-semibold ">
-            Welcome to Vibeo!
+          <Text className="font-psemibold text-2xl text-brown mt-10 text-semibold ">
+            Welcome to VibedUp!
           </Text>
           <FormField
             title="Email"
             value={form.email}
+            placeholder="Enter your email address"
             handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
             keybordType="email-address"
           />
           <FormField
             title="Password"
+            placeholder="Enter your password "
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
@@ -72,7 +74,7 @@ const SignIn = () => {
             isLoading={isSubmitting}
           />
           <View className="flex-row justify-center pt-5 gap-2">
-            <Text className="text-lg text-gray-100 font-pregular">
+            <Text className="text-lg text-brown font-pregular">
               Don’t have an account?
             </Text>
             <Link
@@ -83,7 +85,6 @@ const SignIn = () => {
             </Link>
           </View>
         </View>
-     
       </ScrollView>
     </SafeAreaView>
   );

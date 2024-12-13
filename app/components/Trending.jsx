@@ -16,19 +16,19 @@ import { Video, ResizeMode } from "expo-av";
 
 const zoomIn = {
   0: {
-    scale: 0.9,
+    scale: 0.8,
   },
   1: {
-    scale: 1.1,
+    scale: 1.0,
   },
 };
 
 const zoomOut = {
   0: {
-    scale: 1.1,
+    scale: 1.0,
   },
   1: {
-    scale: 0.9,
+    scale: 0.8,
   },
 };
 
@@ -37,7 +37,7 @@ const TrendingItem = ({ activeItem, item }) => {
 
   return (
     <Animatable.View
-      className="mr-5"
+
       animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
     >
@@ -56,7 +56,7 @@ const TrendingItem = ({ activeItem, item }) => {
         />
       ) : (
         <TouchableOpacity
-          className=" relative justify-center items-center"
+          className=" relative justify-center items-center "
           activeOpacity={0.7}
           onPress={() => {
             setPlay(true);
@@ -64,7 +64,7 @@ const TrendingItem = ({ activeItem, item }) => {
         >
           <ImageBackground
             source={{ uri: item.thumbnail }}
-            className=" w-52 h-72 rounded-[35px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            className=" w-52 h-72 rounded-[35px] my-2 overflow-hidden shadow-lg shadow-black/40"
             resizeMode="cover"
           />
           <Image
@@ -98,6 +98,7 @@ const Trending = ({ posts }) => {
   return (
     <FlatList
       data={posts}
+      className="px-3 rounded-xl shadow-xl  shadow-brown"
       keyExtractor={(item) => item.$id}
       renderItem={({ item }) => (
         <TrendingItem activeItem={activeItem} item={item} />

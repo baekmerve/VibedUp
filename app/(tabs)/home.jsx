@@ -6,7 +6,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../components/SearchInput";
@@ -79,7 +79,7 @@ const Home = () => {
     };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-paper h-full ">
       <FlatList
         data={userContent}
         keyExtractor={(item) => item.$id}
@@ -117,27 +117,27 @@ const Home = () => {
           }
         }}
         ListHeaderComponent={() => (
-          <View className="flex my-6 px-4 space-y-6">
-            <View className="flex justify-between items-start flex-row mb-6">
+          <View className="flex my-4 px-4 space-y-4 ">
+            <View className="flex justify-between items-start flex-row mb-2">
               <View>
-                <Text className="font-pmedium text-sm text-gray-100">
+                <Text className="font-pmedium text-sm text-brown">
                   Welcome Back,
                 </Text>
-                <Text className="text-2xl font-psemibold text-white">
+                <Text className="text-2xl font-psemibold text-brown">
                   {user?.username}
                 </Text>
               </View>
-              <View className="mt-1.5">
+              <View className="">
                 <Image
-                  source={images.logoSmall}
-                  className="w-12 h-12"
+                  source={images.logo}
+                  className="w-24 h-16"
                   resizeMode="contain"
                 />
               </View>
             </View>
             <SearchInput />
-            <View className="w-full flex-1 pt-5 pb-8">
-              <Text className="text-gray-100 text-lg font-pregular mb-3">
+            <View className="w-full flex-1  pb-4">
+              <Text className="text-brown text-lg font-pregular mb-4">
                 Trending Videos
               </Text>
               {/* //desc: if there is no trending video, it wont break with ?? [] */}

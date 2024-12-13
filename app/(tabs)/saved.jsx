@@ -27,7 +27,7 @@ const Saved = () => {
   }, [likedVideos]);
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-paper h-full">
       <FlatList
         data={videos}
         keyExtractor={(item) => item.$id}
@@ -45,19 +45,19 @@ const Saved = () => {
           />
         )}
         ListHeaderComponent={() => (
-          <View className="my-6 px-4">
-            <Text className="text-2xl text-white font-psemibold">
+          <View className="mt-6 mb-2 px-4">
+            <Text className="text-2xl text-gray-700 font-psemibold">
               Saved Videos
             </Text>
 
-            <View className="mt-6 mb-8">
+            <View className="mt-6 mb-8 ">
               <SearchInput />
             </View>
           </View>
         )}
         //desc: for decide what will happen if the list is empty
         ListEmptyComponent={() => (
-          <View className="justify-center items-center px-4">
+          <View className="justify-center items-center px-4 ">
             <Image
               source={images.empty}
               className="w-[270px] h-[215px]"
@@ -65,11 +65,11 @@ const Saved = () => {
             />
             <Text
               className="text-xl 
-     text-center font-psemibold text-white mt-2"
+     text-center font-psemibold text-gray-700 mt-2"
             >
               No Saved Videos
             </Text>
-            <Text className="font-pmedium text-sm text-gray-100">
+            <Text className="font-pmedium text-sm text-gray-700">
               You haven't save any video
             </Text>
           </View>

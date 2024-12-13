@@ -5,11 +5,7 @@ module.exports = {
     extend: {
       colors: {
         primary: "#161622",
-        secondary: {
-          DEFAULT: "#FFF200",
-          100: "#ffdc00",
-          200: "#FFE033",
-        },
+        secondary: "#2D7F86",
         black: {
           DEFAULT: "#000",
           100: "#1E1E2D",
@@ -18,6 +14,10 @@ module.exports = {
         gray: {
           100: "#CDCDE0",
         },
+        paper: "#fff9f4",
+        brown: "#3e3e3e",
+        orange: "#e97451",
+        inputBox: "#666363",
       },
       fontFamily: {
         pthin: ["Poppins-Thin", "sans-serif"],

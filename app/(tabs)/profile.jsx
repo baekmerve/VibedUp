@@ -1,4 +1,11 @@
-import { View, FlatList, TouchableOpacity, Image, Alert } from "react-native";
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Text,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EmptyState from "../components/EmptyState";
@@ -33,8 +40,6 @@ const Profile = () => {
     ...videos.map((item) => ({ ...item, type: "video" })),
     ...posts.map((item) => ({ ...item, type: "post" })),
   ];
-
-
 
   // Function to handle deletion
   const handleDelete = async (contentId, type) => {
@@ -73,75 +78,7 @@ const Profile = () => {
   };
 
   return (
-    // <SafeAreaView className="bg-primary h-full">
-    //   <FlatList
-    //     data={videos}
-    //     keyExtractor={(item) => item.$id}
-    //     renderItem={({ item }) => (
-    //       <VideoCard
-    //         title={item.title}
-    //         thumbnail={item.thumbnail}
-    //         video={item.video}
-    //         creatorName={item.creator.username}
-    //         savedVideo={likedVideos.includes(item.$id)}
-    //         onLikeToggle={() => toggleLike(item.$id)}
-    //         avatar={item.creator.avatar}
-    //         showLikeButton={false}
-    //         showDeleteButton={item.creator.$id === user?.$id}
-    //         onDelete={() => handleDelete(item.$id)}
-    //         isCreator={item.creator.$id === user?.$id}
-    //       />
-    //     )}
-    //     ListHeaderComponent={() => (
-    //       <View className="w-full justify-center items-center mt-6 mb-12 px-4">
-    //         <TouchableOpacity
-    //           className=" w-full items-end mb-10"
-    //           onPress={handleLogout}
-    //         >
-    //           <Image
-    //             source={icons.logout}
-    //             resizeMode="contain"
-    //             className="w-7 h-7"
-    //           />
-    //         </TouchableOpacity>
-    //         <View className="w-16 j h-16  justify-center items-center ">
-    //           <Image
-    //             source={{ uri: user?.avatar }}
-    //             className="w-24 h-24 rounded-full"
-    //             resizeMode="cover"
-    //           />
-    //         </View>
-    //         <InfoBox
-    //           title={user?.username}
-    //           containerStyles="mt-6"
-    //           titleStyles="text-lg"
-    //         />
-    //         <View className=" mt-5 flex-row">
-    //           <InfoBox
-    //             title={videos.length || 0}
-    //             subtitle="Posts"
-    //             containerStyles="mr-10"
-    //             titleStyles="text-xl"
-    //           />
-    //           <InfoBox
-    //             title="1.2k"
-    //             subtitle="Followers"
-    //             titleStyles="text-xl"
-    //           />
-    //         </View>
-    //       </View>
-    //     )}
-    //     //desc: for decide what will happen if the list is empty
-    //     ListEmptyComponent={() => (
-    //       <EmptyState
-    //         title="No Video & Post Found"
-    //         subtitle="No video or post found for this query"
-    //       />
-    //     )}
-    //   />
-    // </SafeAreaView>
-
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-paper h-full">
       <FlatList
         data={userContent}
         keyExtractor={(item) => item.$id}
@@ -178,42 +115,48 @@ const Profile = () => {
           }
         }}
         ListHeaderComponent={() => (
-          <View className="w-full justify-center items-center mt-6 mb-12 px-4">
+          <View className="w-full justify-center items-center mt-6 mb-12 px-4 ">
             <TouchableOpacity
               className=" w-full items-end mb-10"
               onPress={handleLogout}
             >
-              <Image
-                source={icons.logout}
-                resizeMode="contain"
-                className="w-7 h-7"
-              />
+              <View className="flex-row font-bold justify-center items-center gap-2">
+                <Text className="font-psemibold">Logout</Text>
+                <Image
+                  source={icons.logout}
+                  resizeMode="contain"
+                  className="w-7 h-7"
+                />
+              </View>
             </TouchableOpacity>
-            <View className="w-16 j h-16 justify-center items-center">
-              <Image
-                source={{ uri: user?.avatar }}
-                className="w-24 h-24 rounded-full"
-                resizeMode="cover"
-              />
-            </View>
-            <InfoBox
-              title={user?.username}
-              containerStyles="mt-6"
-              titleStyles="text-lg"
-            />
-            <View className="mt-5 flex-row">
-              <InfoBox
-                title={videos.length || 0}
-                subtitle="Videos"
-                containerStyles="mr-10"
-                titleStyles="text-xl"
-              />
-              <InfoBox
-                title={posts.length || 0}
-                subtitle="Posts"
-                containerStyles="mr-10"
-                titleStyles="text-xl"
-              />
+            <View className=" w-full bg-[#C2816F] rounded-2xl justify-center items-center ">
+              <View className=" mt-3">
+                <Image
+                  source={{ uri: user?.avatar }}
+                  className="w-32 h-32 rounded-full"
+                  resizeMode="cover"
+                />
+                <InfoBox
+                  title={user?.username}
+                  containerStyles="mt-2"
+                  titleStyles="text-lg"
+                />
+              </View>
+
+              <View className="mb-4 flex-row justify-center items-center  align-middle ">
+                <InfoBox
+                  title={videos.length || 0}
+                  subtitle="Videos"
+                  containerStyles="mx-5"
+                  titleStyles="text-xl"
+                />
+                <InfoBox
+                  title={posts.length || 0}
+                  subtitle="Posts"
+                  containerStyles="mx-5"
+                  titleStyles="text-xl"
+                />
+              </View>
             </View>
           </View>
         )}

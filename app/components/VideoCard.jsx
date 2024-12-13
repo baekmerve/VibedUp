@@ -24,10 +24,10 @@ const VideoCard = ({
   };
 
   return (
-    <View className="flex-col px-4 mb-14 ">
+    <View className="flex-col px-4 py-1 my-4 ">
       <View className="flex-row gap-3 items-start ">
         <View className="justify-center items-center flex-row flex-1 ">
-          <View className="w-[46px] h-[46px] rounded-lg justify-center items-center p-0.5 ">
+          <View className="w-[46px] h-[46px] rounded-lg justify-center items-center ">
             <Image
               source={{ uri: avatar }}
               className="w-full h-full rounded-full"
@@ -36,13 +36,13 @@ const VideoCard = ({
           </View>
           <View className="justify-center flex-1 ml-3 gap-y-1 ">
             <Text
-              className="text-white font-psemibold text-sm"
+              className="text-brown font-psemibold text-sm "
               numberOfLines={1}
             >
               {title}
             </Text>
             <Text
-              className=" text-xs text-gray-100 font-pregular"
+              className=" text-xs text-brown font-pregular"
               numberOfLines={1}
             >
               {creatorName}
@@ -102,13 +102,13 @@ const VideoCard = ({
           )}
         </View>
       )}
-      <View className=" mt-5 px-3">
-        <Text className="text-white ">{content}</Text>
-      </View>
+
+      <Text className="text-brown mt-3 mb-3 px-2">{content}</Text>
+
       {play ? (
         <Video
           source={{ uri: video }}
-          className="w-full h-56 rounded-xl mt-3"
+          className="w-full h-56 mt-2 rounded-xl "
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls
           shouldPlay
@@ -122,11 +122,11 @@ const VideoCard = ({
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setPlay(true)}
-          className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
+          className="w-full h-60 rounded-xl relative justify-center items-center"
         >
           <Image
             source={{ uri: thumbnail }}
-            className="w-full h-full rounded-xl mt-3"
+            className="w-full h-full rounded-xl "
             resizeMode="cover"
           />
           <Image

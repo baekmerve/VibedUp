@@ -44,25 +44,27 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-paper h-full">
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
           <Image
             source={images.logo}
             resizeMode="contain"
-            className="w-[115px] h-[35px]"
+            className="w-[160px] h-[90px]"
           />
-          <Text className="font-psemibold text-2xl text-white mt-10 text-semibold ">
-            Sign up to Vibeo!
+          <Text className="font-psemibold text-2xl text-brown mt-10 text-semibold ">
+            Sign up to VibedUp!
           </Text>
           <FormField
             title="Username"
+            placeholder="Enter a unique username"
             value={form.username}
             handleChangeText={(e) => setForm({ ...form, username: e })}
             otherStyles="mt-10"
           />
           <FormField
             title="Email"
+            placeholder="Enter your email address"
             value={form.email}
             handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
@@ -70,6 +72,7 @@ const SignUp = () => {
           />
           <FormField
             title="Password"
+            placeholder="Enter a password contains of 8 character"
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
@@ -81,7 +84,7 @@ const SignUp = () => {
             isLoading={isSubmitting}
           />
           <View className="flex-row justify-center pt-5 gap-2">
-            <Text className="text-lg text-gray-100 font-pregular">
+            <Text className="text-lg text-brown font-pregular">
               Already have an account?
             </Text>
             <Link
