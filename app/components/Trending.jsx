@@ -13,6 +13,7 @@ import * as Animatable from "react-native-animatable";
 import { icons } from "../../constants";
 
 import { Video, ResizeMode } from "expo-av";
+import VideoCard from "./VideoCard";
 
 const zoomIn = {
   0: {
@@ -37,9 +38,9 @@ const TrendingItem = ({ activeItem, item }) => {
 
   return (
     <Animatable.View
-
       animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
+     
     >
       {play ? (
         <Video

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,12 +21,13 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 const Create = () => {
   const { user } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
-  const [formType, setFormType] = useState("video"); // Track the selected form type ("video" or "post")
+
+  const [formType, setFormType] = useState("video");
   const [form, setForm] = useState({
     title: "",
     video: null,
     thumbnail: null,
-    content: "", // Add content field for posts
+    content: "",
   });
 
   const openPicker = async (selectType) => {
@@ -47,8 +49,6 @@ const Create = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("Form Data:", form);
-    console.log("Form Type:", formType);
     if (
       !form.title ||
       (formType === "video" && (!form.video || !form.thumbnail)) ||
@@ -127,7 +127,7 @@ const Create = () => {
                   <Video
                     source={{ uri: form.video.uri }}
                     className="w-full h-64 rounded-2xl"
-                    resizeMode={ResizeMode.COVER}
+                    resizeMode={ResizeMode.CONTAIN}
                   />
                 ) : (
                   <View className="w-full h-28 px-4 bg-[#DCDCDB] rounded-2xl justify-center items-center ">
@@ -186,7 +186,7 @@ const Create = () => {
 
         {/* Post Form */}
         {formType === "post" && (
-          <View>
+          <>
             <FormField
               title="Content"
               value={form.content}
@@ -195,7 +195,7 @@ const Create = () => {
               otherStyles="mt-10 mb-10"
               multiline
             />
-          </View>
+          </>
         )}
 
         <CustomButton

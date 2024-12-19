@@ -14,16 +14,16 @@ const EmptyState = ({ title, subtitle }) => {
       />
       <Text
         className="text-xl 
-     text-center font-psemibold text-white mt-2"
+     text-center font-psemibold text-brown mt-2"
       >
         {title}
       </Text>
-      <Text className="font-pmedium text-sm text-gray-100">{subtitle}</Text>
+      <Text className="font-pmedium text-sm text-brown">{subtitle}</Text>
 
       <CustomButton
         title="Create video"
         handlePress={() => router.push("/create")}
-        containerStyles="w-full my-5"
+        containerStyles="w-full my-10"
       />
     </View>
   );

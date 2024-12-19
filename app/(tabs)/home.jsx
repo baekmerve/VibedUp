@@ -38,7 +38,7 @@ const Home = () => {
   const userContent = [
     ...videos.map((item) => ({ ...item, type: "video" })),
     ...posts.map((item) => ({ ...item, type: "post" })),
-  ];
+  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -49,34 +49,34 @@ const Home = () => {
   };
 
   // Function to handle deletion
-    const handleDelete = async (contentId, type) => {
-      try {
-        console.log(contentId);
-        Alert.alert(
-          "Delete Content",
-          `Are you sure you want to delete this ${type}?`,
-          [
-            { text: "Cancel", style: "cancel" },
-            {
-              text: "Delete",
-              style: "destructive",
-              onPress: async () => {
-                if (type === "video") {
-                  await deleteUserVideo(user.$id, contentId); // Call delete API for video
-                  await refetchVideos();
-                } else if (type === "post") {
-                  await deleteUserPost(user.$id, contentId); // Call delete API for post
-                  await refetchPosts();
-                }
-                alert(`${type} deleted successfully`);
-              },
+  const handleDelete = async (contentId, type) => {
+    try {
+      console.log(contentId);
+      Alert.alert(
+        "Delete Content",
+        `Are you sure you want to delete this ${type}?`,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: async () => {
+              if (type === "video") {
+                await deleteUserVideo(user.$id, contentId); // Call delete API for video
+                await refetchVideos();
+              } else if (type === "post") {
+                await deleteUserPost(user.$id, contentId); // Call delete API for post
+                await refetchPosts();
+              }
+              alert(`${type} deleted successfully`);
             },
-          ]
-        );
-      } catch (error) {
-        alert(error.message);
-      }
-    };
+          },
+        ]
+      );
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <SafeAreaView className="bg-paper h-full ">
@@ -138,7 +138,7 @@ const Home = () => {
             <SearchInput />
             <View className="w-full flex-1  pb-4">
               <Text className="text-brown text-lg font-pregular mb-4">
-                Trending Videos
+                Newly Added
               </Text>
               {/* //desc: if there is no trending video, it wont break with ?? [] */}
 

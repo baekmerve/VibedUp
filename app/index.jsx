@@ -23,11 +23,11 @@ export default function App() {
           />
           <Image
             source={images.cards}
-            className="max-w-[380px] w-full h-[300px]"
+            className="max-w-[380px] w-full h-[300px] shadow-xl"
             resizeMode="contain"
           />
           <View className="relative mt-5 ">
-            <Text className="font-bold text-3xl text-brown text-center  0">
+            <Text className="font-bold text-3xl text-brown text-center">
               Unleash the Power of Creativity with{" "}
               <Text className="text-secondary">VibedUp</Text>
             </Text>

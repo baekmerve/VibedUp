@@ -17,12 +17,6 @@ const VideoCard = ({
 }) => {
   const [play, setPlay] = useState(false);
 
-  const [openMenu, setOpenMenu] = useState(false);
-
-  const toggleMenu = () => {
-    setOpenMenu((prevState) => !prevState); // Toggle the menu
-  };
-
   return (
     <View className="flex-col px-4 py-1 my-4 ">
       <View className="flex-row gap-3 items-start ">
@@ -49,59 +43,26 @@ const VideoCard = ({
             </Text>
           </View>
         </View>
-        {/* Menu button */}
-        <View className="pt-2 flex-row justify-around ">
-          <View className="mr-2">
-            <TouchableOpacity onPress={toggleMenu}>
+
+        <View className="mr-2 flex-row justify-center items-center ">
+          <TouchableOpacity onPress={onLikeToggle}>
+            <Image
+              source={savedVideo ? icons.favorite : icons.unfavorite}
+              className="w-7 h-7 "
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          {isCreator && (
+            <TouchableOpacity onPress={onDelete}>
               <Image
-                source={icons.menu}
+                source={icons.icon_delete}
                 className="w-7 h-7"
                 resizeMode="contain"
               />
             </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      {/* Menu showing  */}
-      {openMenu && (
-        <View className="bg-[#1E1E2D] border border-[#232533] rounded-xl w-28 h-[70px] justify-center space-y-2 absolute top-10 right-4 z-10">
-          {/* Like/Unlike button */}
-          <TouchableOpacity onPress={onLikeToggle}>
-            <View className="flex-row justify-evenly items-center">
-              <Image
-                source={savedVideo ? icons.removeBookmark : icons.bookmark}
-                className="w-6 h-6 "
-                resizeMode="contain"
-              />
-              <Text
-                className="text-gray-100 
-              font-psemibold"
-              >
-                {savedVideo ? "Remove" : "Save"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* Delete button visible for creators only */}
-          {isCreator && (
-            <TouchableOpacity onPress={onDelete}>
-              <View className="flex-row justify-evenly items-center">
-                <Image
-                  source={icons.remove}
-                  className="w-6 h-6 "
-                  resizeMode="contain"
-                />
-                <Text
-                  className="text-gray-100 
-              font-psemibold"
-                >
-                  Delete
-                </Text>
-              </View>
-            </TouchableOpacity>
           )}
         </View>
-      )}
+      </View>
 
       <Text className="text-brown mt-3 mb-3 px-2">{content}</Text>
 
