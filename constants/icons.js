@@ -13,6 +13,8 @@ import play from "../assets/icons/play.png";
 import favorite from "../assets/icons/favorite.png";
 import unfavorite from "../assets/icons/unfavorite.png";
 import icon_delete from "../assets/icons/icon_delete.png";
+import edit from "../assets/icons/edit.png";
+import more from "../assets/icons/more.png";
 
 export default {
   play,
@@ -30,4 +32,6 @@ export default {
   favorite,
   unfavorite,
   icon_delete,
+  edit,
+  more,
 };
