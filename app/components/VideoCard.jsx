@@ -12,10 +12,19 @@ const VideoCard = ({
   savedVideo,
   onLikeToggle,
   onDelete,
+  onEdit,
   content,
   isCreator,
+  createdAt,
 }) => {
   const [play, setPlay] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const createdDate = new Date(createdAt);
+  const year = createdDate.getFullYear();
+  const month = String(createdDate.getMonth() + 1).padStart(2, "0");
+  const day = String(createdDate.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
 
   return (
     <View className="flex-col px-4 py-1 my-4 ">
@@ -29,17 +38,14 @@ const VideoCard = ({
             />
           </View>
           <View className="justify-center flex-1 ml-3 gap-y-1 ">
-            <Text
-              className="text-brown font-psemibold text-sm "
-              numberOfLines={1}
-            >
-              {title}
+            <Text className=" text-brown font-psemibold " numberOfLines={1}>
+              {creatorName}
             </Text>
             <Text
-              className=" text-xs text-brown font-pregular"
+              className="text-xs text-brown font-pregular"
               numberOfLines={1}
             >
-              {creatorName}
+              {formattedDate}
             </Text>
           </View>
         </View>
@@ -53,18 +59,47 @@ const VideoCard = ({
             />
           </TouchableOpacity>
           {isCreator && (
-            <TouchableOpacity onPress={onDelete}>
-              <Image
-                source={icons.icon_delete}
-                className="w-7 h-7"
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            <View className=" relative">
+              <TouchableOpacity onPress={() => setOpenMenu(!openMenu)}>
+                <Image
+                  source={icons.more}
+                  className="w-7 h-7"
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              {openMenu && (
+                <View className="border shadow-sm items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper">
+                  <TouchableOpacity
+                    onPress={onEdit}
+                    className=" flex-row m-1 w-[90%]   items-center"
+                  >
+                    <Image
+                      source={icons.edit}
+                      className="w-7 h-7"
+                      resizeMode="contain"
+                    />
+                    <Text className="ml-3">Edit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={onDelete}
+                    className="flex-row m-1 w-[90%] items-center "
+                  >
+                    <Image
+                      source={icons.icon_delete}
+                      className="w-7 h-7"
+                      resizeMode="contain"
+                    />
+                    <Text className="ml-3">Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           )}
         </View>
       </View>
-
-      <Text className="text-brown mt-3 mb-3 px-2">{content}</Text>
+      <Text className="text-brown mt-3 mb-3 font-psemibold">{title}</Text>
+      <Text className="text-brown  mb-3">{content}</Text>
 
       {play ? (
         <Video
