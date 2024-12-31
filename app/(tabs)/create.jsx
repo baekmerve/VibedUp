@@ -116,13 +116,22 @@ const Create = () => {
           value={form.title}
           placeholder="Enter a title"
           handleChangeText={(e) => setForm({ ...form, title: e })}
-          otherStyles="mt-10"
+          otherStyles="mt-7"
+        />
+
+        <FormField
+          title="Content"
+          value={form.content}
+          placeholder="Write your content"
+          handleChangeText={(e) => setForm({ ...form, content: e })}
+          otherStyles="mt-5 mb-5"
+          multiline={true}
         />
 
         {/* Video Form */}
         {formType === "video" && (
           <>
-            <View className="mt-7 space-y-2">
+            <View className="mt-2 space-y-2">
               <Text className="text-base text-brown font-pmedium">
                 Upload Video
               </Text>
@@ -183,7 +192,7 @@ const Create = () => {
         {/* Post Form */}
         {formType === "post" && (
           <>
-            <View className=" mt-7 space-y-2 ">
+            <View className=" mt-2 space-y-2 ">
               <Text className="text-base text-brown font-pmedium">
                 Post Image
               </Text>
@@ -195,7 +204,7 @@ const Create = () => {
                     resizeMode="cover"
                   />
                 ) : (
-                  <View className="w-full h-28 px-4 bg-[#DCDCDB] rounded-2xl justify-center items-center flex-row space-x-2">
+                  <View className="w-full h-28 mb-3 px-4 bg-[#DCDCDB] rounded-2xl justify-center items-center flex-row space-x-2">
                     <View className="items-center space-x-2">
                       <Image
                         source={icons.upload}
@@ -214,15 +223,6 @@ const Create = () => {
         )}
 
         {/* Common Fields */}
-
-        <FormField
-          title="Content"
-          value={form.content}
-          placeholder="Write your content"
-          handleChangeText={(e) => setForm({ ...form, content: e })}
-          otherStyles="mt-10 mb-10"
-          multiline={true}
-        />
 
         <CustomButton
           title="Submit & Publish"
