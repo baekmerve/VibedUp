@@ -17,7 +17,9 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent page refresh on form submission
+
     if (!form.password || !form.email) {
       Alert.alert("Error", "Please fill in all the fields");
     }
@@ -33,7 +35,6 @@ const SignIn = () => {
 
       router.replace("/home");
     } catch (error) {
-      
       Alert.alert("Error", error.message);
     } finally {
       setIsSubmitting(false);
