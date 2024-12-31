@@ -66,7 +66,7 @@ const PostCard = ({
                   />
                 </TouchableOpacity>
                 {openMenu && (
-                  <View className="border shadow-sm items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper">
+                  <View className="items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper shadow-md">
                     <TouchableOpacity
                       onPress={onEdit}
                       className=" flex-row m-1 w-[90%]   items-center"
@@ -115,14 +115,16 @@ const PostCard = ({
             />
           </View>
         ) : (
-          <View className="w-full h-60 rounded-xl mt-4 bg-[#e07b39]  ">
-            <Text className=" text-paper mt-3 px-3 font-pbold"> {title}</Text>
+          <View className="w-full h-60 rounded-xl mt-4  bg-[#F7EBE8]  shadow-md  border border-[#D5C5B5]">
+            <Text className=" text-[#4E3629] mt-3 px-3 font-pbold">
+              {title}
+            </Text>
             {/* Adding ScrollView for content */}
             <ScrollView
               nestedScrollEnabled={true} // Allows nested scrolling
               contentContainerStyle={{ flexGrow: 1 }}
             >
-              <Text className="text-paper  mt-4 px-3"> {content}</Text>
+              <Text className="text-[#4E3629] mt-4 px-3"> {content}</Text>
             </ScrollView>
           </View>
         )}
