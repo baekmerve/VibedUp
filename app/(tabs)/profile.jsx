@@ -144,7 +144,7 @@ const Profile = () => {
                 />
               </View>
             </TouchableOpacity>
-            <View className=" w-full bg-[#72ACB1] rounded-2xl justify-center items-center ">
+            <View className=" w-full bg-blueGreen rounded-2xl justify-center items-center ">
               <View className=" mt-3">
                 <Image
                   source={{ uri: user?.avatar }}
