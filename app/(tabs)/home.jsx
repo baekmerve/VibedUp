@@ -1,81 +1,97 @@
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  RefreshControl,
-  Alert,
-} from "react-native";
-import React, { useState } from "react";
+import { View, Text, FlatList, Image, RefreshControl } from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import SearchInput from "../components/SearchInput";
 import Trending from "../components/Trending";
 import EmptyState from "../components/EmptyState";
-import {
-  deleteUserPost,
-  deleteUserVideo,
-  fetchAllPosts,
-  fetchAllVideos,
-  fetchLatestVideos,
-} from "../../lib/appwrite";
-import useAppwrite from "../../lib/useAppwrite";
+import EditModal from "../components/EditModal";
 import VideoCard from "../components/VideoCard";
-import { useGlobalContext } from "../../context/GlobalProvider";
 import PostCard from "../components/PostCard";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Home = () => {
-  const { data: videos, refetch: refetchVideos } = useAppwrite(fetchAllVideos);
-  const { data: posts, refetch: refetchPosts } = useAppwrite(fetchAllPosts);
+  const {
+    user,
+    savedVideoId,
+    savedPostId,
+    toggleLikeVideo,
+    toggleLikePost,
+    videos,
+    posts,
+    latestPosts,
+    fetchAllVideoContent,
+    fetchAllPostContent,
+    fetchLatestVideoContent,
+    deleteContent,
+    commonRefresh,
+    refreshing,
+  } = useGlobalContext();
 
-  const { data: latestPosts, refetch: refetchLatestPosts } =
-    useAppwrite(fetchLatestVideos);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const { user, likedVideos, toggleLike } = useGlobalContext();
+  const userContent = React.useMemo(() => {
+    return [
+      ...videos.map((item) => ({ ...item, type: "video" })),
+      ...posts.map((item) => ({ ...item, type: "post" })),
+    ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
+  }, [videos, posts]); // Recompute only when videos or posts change
 
-  const [refreshing, setRefreshing] = useState(false);
-
-  const userContent = [
-    ...videos.map((item) => ({ ...item, type: "video" })),
-    ...posts.map((item) => ({ ...item, type: "post" })),
-  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await refetchVideos();
-    await refetchPosts(); // Refetch all videos
-    await refetchLatestPosts(); // Refetch latest posts
-    setRefreshing(false);
+  const handleEditPress = (item) => {
+    setSelectedItem({
+      id: item.$id,
+      type: item.type,
+      title: item.title,
+      content: item.content,
+    });
+    setModalVisible(true);
   };
 
   // Function to handle deletion
   const handleDelete = async (contentId, type) => {
-    try {
-      console.log(contentId);
-      Alert.alert(
-        "Delete Content",
-        `Are you sure you want to delete this ${type}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: async () => {
-              if (type === "video") {
-                await deleteUserVideo(user.$id, contentId); // Call delete API for video
-                await refetchVideos();
-              } else if (type === "post") {
-                await deleteUserPost(user.$id, contentId); // Call delete API for post
-                await refetchPosts();
-              }
-              alert(`${type} deleted successfully`);
-            },
-          },
-        ]
-      );
-    } catch (error) {
-      alert(error.message);
+    if (type === "post") {
+      deleteContent(contentId, type, fetchAllPostContent);
+    } else {
+      deleteContent(contentId, type, fetchAllVideoContent);
     }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!refreshing) {
+          await Promise.all([
+            fetchLatestVideoContent(),
+            fetchAllVideoContent(),
+            fetchAllPostContent(),
+          ]);
+        }
+      } catch (error) {
+        console.error("Error fetching home data:", error);
+        alert("Failed to fetch home content.");
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, []);
+
+  const onRefresh = async () => {
+    if (refreshing) return; // Prevent refresh if already in progress
+
+    // Start refreshing by calling the commonRefresh function
+    commonRefresh(async () => {
+      try {
+        // Run the fetch functions concurrently with Promise.all
+        await Promise.all([
+          fetchLatestVideoContent(),
+          fetchAllVideoContent(),
+          fetchAllPostContent(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error); // Log any errors that occur during fetching
+      }
+    });
   };
 
   return (
@@ -87,12 +103,18 @@ const Home = () => {
           if (item.type === "post") {
             return (
               <PostCard
+                createdAt={item.$createdAt}
                 title={item.title}
                 content={item.content}
                 creatorName={item.creator.username}
+                coverImage={item.thumbnail}
                 avatar={item.creator.avatar}
                 onDelete={() => handleDelete(item.$id, "post")}
+                onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
+                onLikeToggle={() => toggleLikePost(item.$id)}
+                savedPost={savedPostId.includes(item.$id)}
+                showLikeButton={true}
               />
             );
           }
@@ -100,16 +122,18 @@ const Home = () => {
             return (
               <View className="flex relative">
                 <VideoCard
+                  createdAt={item.$createdAt}
                   title={item.title}
                   content={item.content}
                   thumbnail={item.thumbnail}
                   video={item.video}
                   creatorName={item.creator.username}
                   avatar={item.creator.avatar}
-                  savedVideo={likedVideos.includes(item.$id)}
-                  onLikeToggle={() => toggleLike(item.$id)}
+                  savedVideo={savedVideoId.includes(item.$id)}
+                  onLikeToggle={() => toggleLikeVideo(item.$id)}
                   showLikeButton={item.creator.$id !== user?.$id}
-                  onDelete={() => handleDelete(item.$id)}
+                  onDelete={() => handleDelete(item.$id, "video")}
+                  onEdit={() => handleEditPress(item)}
                   isCreator={item.creator.$id === user?.$id}
                 />
               </View>
@@ -138,7 +162,7 @@ const Home = () => {
             <SearchInput />
             <View className="w-full flex-1  pb-4">
               <Text className="text-brown text-lg font-pregular mb-4">
-                Newly Added
+                Newly Added Videos
               </Text>
               {/* //desc: if there is no trending video, it wont break with ?? [] */}
 
@@ -149,14 +173,26 @@ const Home = () => {
         //desc: for decide what will happen if the list is empty
         ListEmptyComponent={() => (
           <EmptyState
-            title="No Videos Found"
-            subtitle="Be the first one to upload a video"
+            title="No Content Found"
+            subtitle="Be the first one to upload a content"
           />
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
+      {selectedItem && (
+        <EditModal
+          contentId={selectedItem.id}
+          visible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          type={selectedItem.type}
+          initialData={{
+            title: selectedItem?.title || "",
+            content: selectedItem?.content || "",
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };

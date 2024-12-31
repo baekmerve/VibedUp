@@ -14,6 +14,22 @@ const SearchInput = ({ initialQuery }) => {
   const pathname = usePathname();
   const [query, setQuery] = useState(initialQuery || "");
 
+  const handleSearchPress = () => {
+    if (!query) {
+      return Alert.alert(
+        "Missing query",
+        "Please input something to search results across the database"
+      );
+    }
+    if (pathname.startsWith("/search")) {
+      // Update params if already on search page
+      router.setParams({ query });
+    } else {
+      // Navigate to the search page with query
+      router.push(`/search/${query}`);
+    }
+  };
+
   return (
     <View className=" w-full h-16 px-4 bg-brown rounded-2xl items-center flex-row space-x-4">
       <TextInput
@@ -23,18 +39,7 @@ const SearchInput = ({ initialQuery }) => {
         placeholderTextColor="#DADADA"
         onChangeText={(e) => setQuery(e)}
       />
-      <TouchableOpacity
-        onPress={() => {
-          if (!query) {
-            return Alert.alert(
-              "Missing query",
-              "Please input something to search results accross database"
-            );
-          }
-          if (pathname.startsWith("/search")) router.setParams({ query });
-          else router.push(`/search/${query}`);
-        }}
-      >
+      <TouchableOpacity onPress={handleSearchPress}>
         <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
       </TouchableOpacity>
     </View>

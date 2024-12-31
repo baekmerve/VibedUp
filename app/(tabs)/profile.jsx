@@ -3,77 +3,89 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Alert,
   Text,
+  RefreshControl,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EmptyState from "../components/EmptyState";
-import {
-  deleteUserPost,
-  deleteUserVideo,
-  getUserPosts,
-  getUserVideos,
-  logout,
-} from "../../lib/appwrite";
-import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../components/VideoCard";
 import PostCard from "../components/PostCard";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
 import InfoBox from "../components/InfoBox";
+import EditModal from "../components/EditModal";
 import { router } from "expo-router";
 
 const Profile = () => {
-  const { user, setUser, likedVideos, toggleLike, setIsLoggedIn } =
-    useGlobalContext();
+  const {
+    user,
+    savedVideoId,
+    savedPostId,
+    toggleLikeVideo,
+    userPosts,
+    userVideos,
+    fetchUserPostList,
+    fetchUserVideoList,
+    deleteContent,
+    userLogout,
+    commonRefresh,
+    refreshing,
+  } = useGlobalContext();
 
-  const { data: videos = [], refetch: refetchUserVideos } = useAppwrite(() =>
-    getUserVideos(user.$id)
-  );
-  const { data: posts = [], refetch: refetchUserPosts } = useAppwrite(() =>
-    getUserPosts(user.$id)
-  );
+  //const [refreshing, setRefreshing] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  // Combine videos and posts
   const userContent = [
-    ...videos.map((item) => ({ ...item, type: "video" })),
-    ...posts.map((item) => ({ ...item, type: "post" })),
-  ];
+    ...userVideos.map((item) => ({ ...item, type: "video" })),
+    ...userPosts.map((item) => ({ ...item, type: "post" })),
+  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
+
+  const handleEditPress = (item) => {
+    setSelectedItem({
+      id: item.$id,
+      type: item.type,
+      title: item.title,
+      content: item.content,
+    });
+    setModalVisible(true);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchUserPostList(user.$id);
+        await fetchUserVideoList(user.$id);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("Failed to fetch user content.");
+      }
+    };
+
+    if (user) {
+      fetchData(); // Call the async function only if `user` exists
+    }
+  }, [user]); // Dependency on `user`, ensuring the fetch is triggered when `user` changes.
+
+  const onRefresh = () => {
+    commonRefresh(async () => {
+      await fetchUserPostList(user.$id);
+      await fetchUserVideoList(user.$id);
+    });
+  };
 
   // Function to handle deletion
   const handleDelete = async (contentId, type) => {
-    try {
-      Alert.alert(
-        "Delete Content",
-        `Are you sure you want to delete this ${type}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: async () => {
-              if (type === "video") {
-                await deleteUserVideo(user.$id, contentId); // Call delete API for video
-                await refetchUserVideos();
-              } else if (type === "post") {
-                await deleteUserPost(user.$id, contentId); // Call delete API for post
-                await refetchUserPosts();
-              }
-              alert(`${type} deleted successfully`);
-            },
-          },
-        ]
-      );
-    } catch (error) {
-      alert(error.message);
+    if (type === "post") {
+      deleteContent(contentId, type, fetchUserPostList);
+    } else {
+      deleteContent(contentId, type, fetchUserVideoList);
     }
   };
 
   const handleLogout = async () => {
-    await logout();
-    setUser(null);
-    setIsLoggedIn(false);
+    await userLogout();
     router.replace("/sign-in");
   };
 
@@ -91,7 +103,9 @@ const Profile = () => {
                 creatorName={item.creator.username}
                 avatar={item.creator.avatar}
                 onDelete={() => handleDelete(item.$id, "post")}
+                onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
+                savedPost={savedPostId.includes(item.$id)}
               />
             );
           }
@@ -103,12 +117,13 @@ const Profile = () => {
                 thumbnail={item.thumbnail}
                 video={item.video}
                 creatorName={item.creator.username}
-                savedVideo={likedVideos.includes(item.$id)}
-                onLikeToggle={() => toggleLike(item.$id)}
+                savedVideo={savedVideoId.includes(item.$id)}
+                onLikeToggle={() => toggleLikeVideo(item.$id)}
                 avatar={item.creator.avatar}
                 showLikeButton={false}
                 showDeleteButton={item.creator.$id === user?.$id}
                 onDelete={() => handleDelete(item.$id, "video")}
+                onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
               />
             );
@@ -145,13 +160,13 @@ const Profile = () => {
 
               <View className="mb-4 flex-row justify-center items-center  align-middle ">
                 <InfoBox
-                  title={videos.length || 0}
+                  title={userVideos.length || 0}
                   subtitle="Videos"
                   containerStyles="mx-5"
                   titleStyles="text-xl"
                 />
                 <InfoBox
-                  title={posts.length || 0}
+                  title={userPosts.length || 0}
                   subtitle="Posts"
                   containerStyles="mx-5"
                   titleStyles="text-xl"
@@ -166,7 +181,22 @@ const Profile = () => {
             subtitle="No videos or posts found for this user"
           />
         )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
+      {selectedItem && (
+        <EditModal
+          contentId={selectedItem.id}
+          visible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          type={selectedItem.type}
+          initialData={{
+            title: selectedItem?.title || "",
+            content: selectedItem?.content || "",
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };

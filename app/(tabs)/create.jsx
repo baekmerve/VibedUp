@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  FlatList,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,11 +14,10 @@ import { icons } from "../../constants";
 import CustomButton from "../components/CustomButton";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import { createVideo, createPost } from "../../lib/appwrite"; // Import function for creating posts
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Create = () => {
-  const { user } = useGlobalContext();
+  const { user, handleCreatePost, handleCreatVideo } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
 
   const [formType, setFormType] = useState("video");
@@ -39,7 +37,10 @@ const Create = () => {
 
     if (!result.canceled) {
       if (selectType === "image") {
-        setForm({ ...form, thumbnail: result.assets[0] });
+        setForm({
+          ...form,
+          thumbnail: result.assets[0],
+        });
       }
 
       if (selectType === "video") {
@@ -60,12 +61,15 @@ const Create = () => {
 
     try {
       if (formType === "video") {
-        await createVideo({ ...form, userId: user.$id });
+        // await createVideo({ ...form, userId: user.$id });
+        await handleCreatVideo({ ...form, userId: user.$id });
       } else if (formType === "post") {
-        await createPost({ ...form, userId: user.$id });
+        //await createPost({ ...form, userId: user.$id });
+        await handleCreatePost({ ...form, userId: user.$id });
       }
 
       Alert.alert("Success", "Content uploaded successfully!");
+
       router.push("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -173,35 +177,57 @@ const Create = () => {
                 )}
               </TouchableOpacity>
             </View>
-
-            <FormField
-              title="Video Content"
-              value={form.content}
-              placeholder="Enter the content for this video"
-              handleChangeText={(e) => setForm({ ...form, content: e })}
-              otherStyles="mt-7 "
-            />
           </>
         )}
 
         {/* Post Form */}
         {formType === "post" && (
           <>
-            <FormField
-              title="Content"
-              value={form.content}
-              placeholder="Write your post content"
-              handleChangeText={(e) => setForm({ ...form, content: e })}
-              otherStyles="mt-10 mb-10"
-              multiline
-            />
+            <View className=" mt-7 space-y-2 ">
+              <Text className="text-base text-brown font-pmedium">
+                Post Image
+              </Text>
+              <TouchableOpacity onPress={() => openPicker("image")}>
+                {form.thumbnail ? (
+                  <Image
+                    source={{ uri: form.thumbnail.uri }}
+                    className="w-full h-64 rounded-2xl"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View className="w-full h-28 px-4 bg-[#DCDCDB] rounded-2xl justify-center items-center flex-row space-x-2">
+                    <View className="items-center space-x-2">
+                      <Image
+                        source={icons.upload}
+                        resizeMode="contain"
+                        className="w-7 h-7"
+                      />
+                      <Text className="text-sm text-brown font-pmedium">
+                        Choose an image
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </>
         )}
+
+        {/* Common Fields */}
+
+        <FormField
+          title="Content"
+          value={form.content}
+          placeholder="Write your content"
+          handleChangeText={(e) => setForm({ ...form, content: e })}
+          otherStyles="mt-10 mb-10"
+          multiline={true}
+        />
 
         <CustomButton
           title="Submit & Publish"
           handlePress={handleSubmit}
-          containerStyles="mt-7"
+          containerStyles="mt-5"
           isLoading={uploading}
         />
       </ScrollView>

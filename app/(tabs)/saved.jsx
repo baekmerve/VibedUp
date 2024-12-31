@@ -2,52 +2,94 @@ import { View, Text, FlatList, Image, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../components/SearchInput";
-import { getUserLikedVideos } from "../../lib/appwrite";
-import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../components/VideoCard";
 import { images } from "../../constants";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import PostCard from "../components/PostCard";
 
 const Saved = () => {
-  const { user, likedVideos, toggleLike } = useGlobalContext();
-  const [refreshing, setRefreshing] = useState(false);
+  const {
+    user,
+    toggleLikeVideo,
+    toggleLikePost,
+    fetchUserLikedVideos,
+    fetchUserLikedPosts,
+    likedVideoList,
+    likedPostList,
+    savedVideoId,
+    savedPostId,
+    commonRefresh,
+    refreshing,
+  } = useGlobalContext();
+  //const [refreshing, setRefreshing] = useState(false);
 
-  const { data: videos, refetch } = useAppwrite(() =>
-    getUserLikedVideos(user.$id)
-  );
+  const userContent = [
+    ...likedVideoList.map((item) => ({ ...item, type: "video" })),
+    ...likedPostList.map((item) => ({ ...item, type: "post" })),
+  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
+  const onRefresh = () => {
+    commonRefresh(async () => {
+      await fetchUserLikedVideos(user.$id);
+      await fetchUserLikedPosts(user.$id);
+    });
   };
 
   useEffect(() => {
-    refetch();
-  }, [likedVideos]);
+    const fetchData = async () => {
+      try {
+        await fetchUserLikedVideos();
+        await fetchUserLikedPosts();
+      } catch (error) {
+        console.error("Error fetching saved data:", error);
+        alert("Failed to fetch saved content.");
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, []); // Only run once on mount since it doesn’t have dependencies.
 
   return (
     <SafeAreaView className="bg-paper h-full">
       <FlatList
-        data={videos}
+        data={userContent}
         keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-          <VideoCard
-            title={item.title}
-            content={item.content}
-            thumbnail={item.thumbnail}
-            video={item.video}
-            creatorName={item.creator.username}
-            avatar={item.creator.avatar}
-            savedVideo={likedVideos.includes(item.$id)}
-            onLikeToggle={() => toggleLike(item.$id)}
-            showLikeButton={true}
-          />
-        )}
+        renderItem={({ item }) => {
+          if (item.type === "post") {
+            return (
+              <PostCard
+                title={item.title}
+                content={item.content}
+                creatorName={item.creator.username}
+                coverImage={item.thumbnail}
+                avatar={item.creator.avatar}
+                isCreator={item.creator.$id === user?.$id}
+                onLikeToggle={() => toggleLikePost(item.$id)}
+                savedPost={savedPostId.includes(item.$id)}
+                showLikeButton={true}
+              />
+            );
+          }
+          if (item.type === "video") {
+            return (
+              <VideoCard
+                title={item.title}
+                content={item.content}
+                thumbnail={item.thumbnail}
+                video={item.video}
+                creatorName={item.creator.username}
+                avatar={item.creator.avatar}
+                savedVideo={savedVideoId.includes(item.$id)}
+                onLikeToggle={() => toggleLikeVideo(item.$id)}
+                showLikeButton={true}
+              />
+            );
+          }
+        }}
         ListHeaderComponent={() => (
           <View className="mt-6 mb-2 px-4">
             <Text className="text-2xl text-gray-700 font-psemibold">
-              Saved Videos
+              Saved Videos & Posts
             </Text>
 
             <View className="mt-6 mb-8 ">
@@ -63,14 +105,11 @@ const Saved = () => {
               className="w-[270px] h-[215px]"
               resizeMode="contain"
             />
-            <Text
-              className="text-xl 
-     text-center font-psemibold text-gray-700 mt-2"
-            >
-              No Saved Videos
+            <Text className="text-xl text-center font-psemibold text-gray-700 mt-2">
+              No Saved Videos & Posts
             </Text>
             <Text className="font-pmedium text-sm text-gray-700">
-              You haven't save any video
+              You haven't save any video or posts
             </Text>
           </View>
         )}
