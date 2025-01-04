@@ -202,7 +202,7 @@ const Home = () => {
         ListEmptyComponent={() => (
           <EmptyState
             title="No Content Found"
-            subtitle="Be the first one to upload a content"
+            subtitle="Be the first one to share a content"
           />
         )}
         refreshControl={
