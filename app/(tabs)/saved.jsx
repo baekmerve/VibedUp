@@ -21,7 +21,6 @@ const Saved = () => {
     commonRefresh,
     refreshing,
   } = useGlobalContext();
-  //const [refreshing, setRefreshing] = useState(false);
 
   const userContent = [
     ...likedVideoList.map((item) => ({ ...item, type: "video" })),
@@ -58,12 +57,12 @@ const Saved = () => {
           if (item.type === "post") {
             return (
               <PostCard
+                createdAt={item.$createdAt}
                 title={item.title}
                 content={item.content}
                 creatorName={item.creator.username}
                 coverImage={item.thumbnail}
                 avatar={item.creator.avatar}
-                isCreator={item.creator.$id === user?.$id}
                 onLikeToggle={() => toggleLikePost(item.$id)}
                 savedPost={savedPostId.includes(item.$id)}
                 showLikeButton={true}
@@ -73,6 +72,7 @@ const Saved = () => {
           if (item.type === "video") {
             return (
               <VideoCard
+                createdAt={item.$createdAt}
                 title={item.title}
                 content={item.content}
                 thumbnail={item.thumbnail}
