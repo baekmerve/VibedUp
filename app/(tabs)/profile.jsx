@@ -31,16 +31,25 @@ const Profile = () => {
     userLogout,
     commonRefresh,
     refreshing,
+    menuState,
+    setMenuState,
+    handleToggleMenu,
+    updateContent,
+    setUserPosts,
   } = useGlobalContext();
 
-  //const [refreshing, setRefreshing] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [userContent, setUserContent] = useState([]);
 
-  const userContent = [
-    ...userVideos.map((item) => ({ ...item, type: "video" })),
-    ...userPosts.map((item) => ({ ...item, type: "post" })),
-  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
+  useEffect(() => {
+    const combinedContent = [
+      ...userVideos.map((item) => ({ ...item, type: "video" })),
+      ...userPosts.map((item) => ({ ...item, type: "post" })),
+    ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
+
+    setUserContent(combinedContent);
+  }, [userVideos, userPosts]); // Refresh userContent whenever userVideos or userPosts change
 
   const handleEditPress = (item) => {
     setSelectedItem({
@@ -75,13 +84,30 @@ const Profile = () => {
     });
   };
 
+  // Function to handle edit
+  const handleUpdate = async (contentId, { title, content }, type) => {
+    try {
+      await updateContent(contentId, { title, content }, type); // Using the update function from context
+      // Update local user posts state to reflect the changes
+      setUserPosts((prevUserPosts) =>
+        prevUserPosts.map((post) =>
+          post.$id === contentId ? { ...post, title, content } : post
+        )
+      );
+      setMenuState((prev) => ({ ...prev, [contentId]: false })); // Close menu
+      setModalVisible(false);
+      alert(`${type} updated successfully`);
+    } catch (error) {
+      alert(`Error updating content: ${error.message}`);
+    }
+  };
+
   // Function to handle deletion
   const handleDelete = async (contentId, type) => {
-    if (type === "post") {
-      deleteContent(contentId, type, fetchUserPostList);
-    } else {
-      deleteContent(contentId, type, fetchUserVideoList);
-    }
+    deleteContent(contentId, type, () => {
+      if (type === "post") fetchUserPostList(user.$id);
+      else fetchUserVideoList(user.$id);
+    });
   };
 
   const handleLogout = async () => {
@@ -98,20 +124,25 @@ const Profile = () => {
           if (item.type === "post") {
             return (
               <PostCard
+                createdAt={item.$createdAt}
                 title={item.title}
                 content={item.content}
                 creatorName={item.creator.username}
+                coverImage={item.thumbnail}
                 avatar={item.creator.avatar}
                 onDelete={() => handleDelete(item.$id, "post")}
                 onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
                 savedPost={savedPostId.includes(item.$id)}
+                openMenu={menuState[item.$id] || false}
+                onToggleMenu={() => handleToggleMenu(item.$id)}
               />
             );
           }
           if (item.type === "video") {
             return (
               <VideoCard
+                createdAt={item.$createdAt}
                 title={item.title}
                 content={item.content}
                 thumbnail={item.thumbnail}
@@ -120,6 +151,8 @@ const Profile = () => {
                 savedVideo={savedVideoId.includes(item.$id)}
                 onLikeToggle={() => toggleLikeVideo(item.$id)}
                 avatar={item.creator.avatar}
+                openMenu={menuState[item.$id] || false}
+                onToggleMenu={() => handleToggleMenu(item.$id)}
                 showLikeButton={false}
                 showDeleteButton={item.creator.$id === user?.$id}
                 onDelete={() => handleDelete(item.$id, "video")}
@@ -191,6 +224,8 @@ const Profile = () => {
           visible={isModalVisible}
           onClose={() => setModalVisible(false)}
           type={selectedItem.type}
+          setMenuState={setMenuState}
+          handleUpdate={handleUpdate}
           initialData={{
             title: selectedItem?.title || "",
             content: selectedItem?.content || "",
