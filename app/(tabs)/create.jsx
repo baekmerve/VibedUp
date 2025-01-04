@@ -117,6 +117,7 @@ const Create = () => {
           placeholder="Enter a title"
           handleChangeText={(e) => setForm({ ...form, title: e })}
           otherStyles="mt-7"
+          multiline={true}
         />
 
         <FormField
@@ -124,7 +125,7 @@ const Create = () => {
           value={form.content}
           placeholder="Write your content"
           handleChangeText={(e) => setForm({ ...form, content: e })}
-          otherStyles="mt-5 mb-5"
+          otherStyles="mt-5 mb-5 "
           multiline={true}
         />
 
