@@ -4,7 +4,7 @@ import { Tabs} from "expo-router";
 import { icons } from "../../constants";
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
-    <View className="items-center justify-center gap-2 w-[55px] mt-5">
+    <View className="items-center justify-center  gap-1 w-[55px] mt-2">
       <Image
         source={icon}
         resizeMode="contain"
@@ -37,7 +37,7 @@ const TabsLayout = () => {
             borderTopWidth: 1,
             borderTopColor: "#3e3e3e",
             height: 100,
-            paddingTop: 7,
+            paddingTop: 6,
           },
         }}
       >
