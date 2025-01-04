@@ -106,10 +106,10 @@ const Saved = () => {
               resizeMode="contain"
             />
             <Text className="text-xl text-center font-psemibold text-gray-700 mt-2">
-              No Saved Videos & Posts
+              No Saved Content
             </Text>
             <Text className="font-pmedium text-sm text-gray-700">
-              You haven't save any video or posts
+              You haven't save any content
             </Text>
           </View>
         )}
