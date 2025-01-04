@@ -1,7 +1,8 @@
-import { View, Text, Image, TouchableOpacity, Button } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { icons } from "../../constants";
 import { ResizeMode, Video } from "expo-av";
+import CardButtons from "./CardButtons";
 
 const VideoCard = ({
   title,
@@ -16,9 +17,10 @@ const VideoCard = ({
   content,
   isCreator,
   createdAt,
+  openMenu,
+  onToggleMenu,
 }) => {
   const [play, setPlay] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
 
   const createdDate = new Date(createdAt);
   const year = createdDate.getFullYear();
@@ -50,53 +52,15 @@ const VideoCard = ({
           </View>
         </View>
 
-        <View className="mr-2 flex-row justify-center items-center ">
-          <TouchableOpacity onPress={onLikeToggle}>
-            <Image
-              source={savedVideo ? icons.favorite : icons.unfavorite}
-              className="w-7 h-7 "
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          {isCreator && (
-            <View className=" relative">
-              <TouchableOpacity onPress={() => setOpenMenu(!openMenu)}>
-                <Image
-                  source={icons.more}
-                  className="w-7 h-7"
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              {openMenu && (
-                <View className="border shadow-sm items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper">
-                  <TouchableOpacity
-                    onPress={onEdit}
-                    className=" flex-row m-1 w-[90%]   items-center"
-                  >
-                    <Image
-                      source={icons.edit}
-                      className="w-7 h-7"
-                      resizeMode="contain"
-                    />
-                    <Text className="ml-3">Edit</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={onDelete}
-                    className="flex-row m-1 w-[90%] items-center "
-                  >
-                    <Image
-                      source={icons.icon_delete}
-                      className="w-7 h-7"
-                      resizeMode="contain"
-                    />
-                    <Text className="ml-3">Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          )}
-        </View>
+        <CardButtons
+          onLikeToggle={onLikeToggle}
+          savedList={savedVideo}
+          isCreator={isCreator}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          openMenu={openMenu}
+          onToggleMenu={onToggleMenu}
+        />
       </View>
       <Text className="text-brown mt-3 mb-3 font-psemibold">{title}</Text>
       <Text className="text-brown  mb-3">{content}</Text>
