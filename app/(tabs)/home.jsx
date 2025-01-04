@@ -26,6 +26,11 @@ const Home = () => {
     deleteContent,
     commonRefresh,
     refreshing,
+    menuState,
+    setMenuState,
+    handleToggleMenu,
+    setUserPosts,
+    updateContent,
   } = useGlobalContext();
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -49,11 +54,30 @@ const Home = () => {
   };
 
   // Function to handle deletion
+
   const handleDelete = async (contentId, type) => {
     if (type === "post") {
       deleteContent(contentId, type, fetchAllPostContent);
     } else {
       deleteContent(contentId, type, fetchAllVideoContent);
+    }
+  };
+
+  const handleUpdate = async (contentId, { title, content }, type) => {
+    try {
+      await updateContent(contentId, { title, content }, type); // Using the update function from context
+
+      // Update local user posts state to reflect the changes
+      setUserPosts((prevUserPosts) =>
+        prevUserPosts.map((post) =>
+          post.$id === contentId ? { ...post, title, content } : post
+        )
+      );
+      setMenuState((prev) => ({ ...prev, [contentId]: false })); // Close menu
+      setModalVisible(false);
+      alert(`${type} updated successfully`);
+    } catch (error) {
+      alert(`Error updating content: ${error.message}`);
     }
   };
 
@@ -115,6 +139,8 @@ const Home = () => {
                 onLikeToggle={() => toggleLikePost(item.$id)}
                 savedPost={savedPostId.includes(item.$id)}
                 showLikeButton={true}
+                openMenu={menuState[item.$id] || false}
+                onToggleMenu={() => handleToggleMenu(item.$id)}
               />
             );
           }
@@ -135,6 +161,8 @@ const Home = () => {
                   onDelete={() => handleDelete(item.$id, "video")}
                   onEdit={() => handleEditPress(item)}
                   isCreator={item.creator.$id === user?.$id}
+                  openMenu={menuState[item.$id] || false}
+                  onToggleMenu={() => handleToggleMenu(item.$id)}
                 />
               </View>
             );
@@ -187,9 +215,11 @@ const Home = () => {
           visible={isModalVisible}
           onClose={() => setModalVisible(false)}
           type={selectedItem.type}
+          setMenuState={setMenuState}
+          handleUpdate={handleUpdate}
           initialData={{
-            title: selectedItem?.title || "",
-            content: selectedItem?.content || "",
+            title: selectedItem.title || "",
+            content: selectedItem.content || "",
           }}
         />
       )}
