@@ -1,6 +1,6 @@
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
-import { icons } from "../../constants";
+import { View, Text, Image, ScrollView } from "react-native";
+import React from "react";
+import CardButtons from "./CardButtons";
 
 const PostCard = ({
   title,
@@ -14,6 +14,9 @@ const PostCard = ({
   savedPost,
   coverImage,
   createdAt,
+  openMenu,
+  onToggleMenu,
+
 }) => {
   const createdDate = new Date(createdAt);
   const year = createdDate.getFullYear();
@@ -21,11 +24,9 @@ const PostCard = ({
   const day = String(createdDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
 
-  const [openMenu, setOpenMenu] = useState(false);
-
   return (
     <ScrollView>
-      <View className="flex-col items-center px-4 my-2 ">
+      <View className="flex-col items-center px-4 my-4">
         <View className="flex-row gap-3 items-start">
           <View className="justify-center items-center flex-row flex-1">
             <View className="w-[46px] h-[46px] rounded-lg justify-center items-center ">
@@ -47,54 +48,15 @@ const PostCard = ({
               </Text>
             </View>
           </View>
-          <View className="mr-2 flex-row justify-center items-center ">
-            <TouchableOpacity onPress={onLikeToggle}>
-              <Image
-                source={savedPost ? icons.favorite : icons.unfavorite}
-                className="w-7 h-7 "
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-
-            {isCreator && (
-              <View className=" relative">
-                <TouchableOpacity onPress={() => setOpenMenu(!openMenu)}>
-                  <Image
-                    source={icons.more}
-                    className="w-7 h-7"
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-                {openMenu && (
-                  <View className="items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper shadow-md">
-                    <TouchableOpacity
-                      onPress={onEdit}
-                      className=" flex-row m-1 w-[90%]   items-center"
-                    >
-                      <Image
-                        source={icons.edit}
-                        className="w-7 h-7"
-                        resizeMode="contain"
-                      />
-                      <Text className="ml-3">Edit</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={onDelete}
-                      className="flex-row m-1 w-[90%] items-center "
-                    >
-                      <Image
-                        source={icons.icon_delete}
-                        className="w-7 h-7"
-                        resizeMode="contain"
-                      />
-                      <Text className="ml-3">Delete</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
-          </View>
+          <CardButtons
+            onLikeToggle={onLikeToggle}
+            savedList={savedPost}
+            isCreator={isCreator}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            openMenu={openMenu}
+            onToggleMenu={onToggleMenu}
+          />
         </View>
 
         {coverImage ? (
