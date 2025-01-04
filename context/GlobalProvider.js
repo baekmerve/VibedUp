@@ -49,6 +49,7 @@ const GlobalProvider = ({ children }) => {
   const [searchVideoResult, setSearchVideoResult] = useState([]);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [menuState, setMenuState] = useState({});
 
   // function for fetchUserData
 
@@ -86,6 +87,13 @@ const GlobalProvider = ({ children }) => {
     } finally {
       setRefreshing(false); // Stop refreshing when done
     }
+  };
+  // function for open/close the menu
+  const handleToggleMenu = (itemId) => {
+    setMenuState((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
   };
 
   // function for handleCreatePost
@@ -164,12 +172,30 @@ const GlobalProvider = ({ children }) => {
 
   //function for updateContent
   const updateContent = async (contentId, updatedData, type) => {
+    if (!user) return;
     try {
       // Perform the update for either video or post
       if (type === "video") {
-        await editUserVideo(contentId, updatedData); // Assuming editUserVideo is defined somewhere
+        await editUserVideo(contentId, updatedData);
+        setVideos((prevVideos) =>
+          prevVideos.map((video) =>
+            video.$id === contentId ? { ...video, ...updatedData } : video
+          )
+        );
       } else if (type === "post") {
-        await editUserPost(contentId, updatedData); // Assuming editUserPost is defined somewhere
+        await editUserPost(contentId, updatedData);
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.$id === contentId ? { ...post, ...updatedData } : post
+          )
+        );
+
+        // Update user posts list specifically for profile page
+        setUserPosts((prevUserPosts) =>
+          prevUserPosts.map((post) =>
+            post.$id === contentId ? { ...post, ...updatedData } : post
+          )
+        );
       }
 
       return `${type} updated successfully`;
@@ -227,8 +253,14 @@ const GlobalProvider = ({ children }) => {
             onPress: async () => {
               if (type === "video") {
                 await deleteUserVideo(user.$id, contentId); // Call delete API for video
+                setVideos((prevVideos) =>
+                  prevVideos.filter((video) => video.$id !== contentId)
+                );
               } else if (type === "post") {
                 await deleteUserPost(user.$id, contentId); // Call delete API for post
+                setPosts((prevPosts) =>
+                  prevPosts.filter((post) => post.$id !== contentId)
+                );
               }
               await refetchFunction(); // Call the passed refetch function
               alert(`${type} deleted successfully`);
@@ -272,7 +304,6 @@ const GlobalProvider = ({ children }) => {
     try {
       const searchedVideos = await searchVideos(query);
       setSearchVideoResult(searchedVideos);
-
     } catch (error) {
       console.error("Error fetching search video result :", error.message);
       setSearchVideoResult([]);
@@ -292,7 +323,7 @@ const GlobalProvider = ({ children }) => {
       setSearchPostResult(searchPostResult);
     } catch (error) {
       console.error("Error fetching search post result :", error.message);
-       setSearchPostResult([]);
+      setSearchPostResult([]);
       throw new Error(error.message || "Failed to fetch search post result");
     }
   };
@@ -376,6 +407,10 @@ const GlobalProvider = ({ children }) => {
         fetchSearchPosts,
         searchPostResult,
         searchVideoResult,
+        menuState,
+        handleToggleMenu,
+        setMenuState,
+        setUserPosts,
       }}
     >
       {children}
