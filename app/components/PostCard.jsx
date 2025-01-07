@@ -1,6 +1,7 @@
 import { View, Text, Image, ScrollView } from "react-native";
 import React from "react";
 import CardButtons from "./CardButtons";
+import { icons } from "../../constants";
 
 const PostCard = ({
   title,
@@ -16,13 +17,20 @@ const PostCard = ({
   createdAt,
   openMenu,
   onToggleMenu,
-
 }) => {
+ 
   const createdDate = new Date(createdAt);
   const year = createdDate.getFullYear();
   const month = String(createdDate.getMonth() + 1).padStart(2, "0");
   const day = String(createdDate.getDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}-${day}`;
+
+  //? Get hours, minutes, and seconds
+  const hours = String(createdDate.getHours()).padStart(2, "0");
+  const minutes = String(createdDate.getMinutes()).padStart(2, "0");
+  const seconds = String(createdDate.getSeconds()).padStart(2, "0");
+
+  //? Format the date and time
+  const formattedDate = `${year}.${month}.${day} - ${hours}:${minutes}:${seconds}`;
 
   return (
     <ScrollView>
@@ -30,11 +38,19 @@ const PostCard = ({
         <View className="flex-row gap-3 items-start">
           <View className="justify-center items-center flex-row flex-1">
             <View className="w-[46px] h-[46px] rounded-lg justify-center items-center ">
-              <Image
-                source={{ uri: avatar }}
-                className="w-full h-full rounded-full"
-                resizeMode="cover"
-              />
+              {avatar ? (
+                <Image
+                  source={{ uri: avatar }}
+                  className="w-full h-full rounded-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image
+                  source={icons.profile2}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              )}
             </View>
             <View className="justify-center flex-1 ml-3 gap-y-1">
               <Text className=" text-brown font-psemibold" numberOfLines={1}>

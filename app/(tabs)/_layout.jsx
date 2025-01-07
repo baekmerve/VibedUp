@@ -1,6 +1,6 @@
 import { View, Text, Image } from "react-native";
 import React from "react";
-import { Tabs} from "expo-router";
+import { Tabs } from "expo-router";
 import { icons } from "../../constants";
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -37,7 +37,7 @@ const TabsLayout = () => {
             borderTopWidth: 1,
             borderTopColor: "#3e3e3e",
             height: 100,
-            paddingTop: 6,
+            paddingTop: 8,
           },
         }}
       >

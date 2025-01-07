@@ -9,6 +9,7 @@ const FormField = ({
   placeholder,
   otherStyles,
   multiline,
+  keyboardType = "default",
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);

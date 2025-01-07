@@ -61,10 +61,8 @@ const Create = () => {
 
     try {
       if (formType === "video") {
-        // await createVideo({ ...form, userId: user.$id });
         await handleCreatVideo({ ...form, userId: user.$id });
       } else if (formType === "post") {
-        //await createPost({ ...form, userId: user.$id });
         await handleCreatePost({ ...form, userId: user.$id });
       }
 

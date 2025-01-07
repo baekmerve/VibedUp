@@ -12,8 +12,6 @@ const CardButtons = ({
   openMenu,
   onToggleMenu,
 }) => {
-  //const [openMenu, setOpenMenu] = useState(false);
-
   return (
     <View className="mr-2 flex-row justify-center items-center ">
       <TouchableOpacity onPress={onLikeToggle}>
@@ -37,7 +35,6 @@ const CardButtons = ({
           {openMenu && (
             <View className="items-center absolute top-9 right-1 z-10  p-1 w-32 rounded-lg bg-paper shadow-md">
               <TouchableOpacity
-                //onPress={onEdit}
                 onPress={() => {
                   onEdit(); // Call edit function
                   onToggleMenu(); // Close the menu after editing
@@ -53,7 +50,6 @@ const CardButtons = ({
               </TouchableOpacity>
 
               <TouchableOpacity
-                //onPress={onDelete}
                 onPress={() => {
                   onDelete(); // Call delete function
                   onToggleMenu(); // Close the menu after deleting
