@@ -15,6 +15,10 @@ import unfavorite from "../assets/icons/unfavorite.png";
 import icon_delete from "../assets/icons/icon_delete.png";
 import edit from "../assets/icons/edit.png";
 import more from "../assets/icons/more.png";
+import profile2 from "../assets/icons/profile2.png";
+import upload2 from "../assets/icons/upload2.png";
+
+
 
 export default {
   play,
@@ -34,4 +38,7 @@ export default {
   icon_delete,
   edit,
   more,
+  profile2,
+  upload2,
+
 };
