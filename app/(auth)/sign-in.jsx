@@ -22,6 +22,13 @@ const SignIn = () => {
 
     if (!form.password || !form.email) {
       Alert.alert("Error", "Please fill in all the fields");
+      return;
+    }
+    // Simple Email Validation
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(form.email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
     }
     setIsSubmitting(true);
 
