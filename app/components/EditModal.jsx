@@ -9,15 +9,22 @@ const EditModal = ({
   initialData,
   type,
   handleUpdate,
+
 }) => {
   const [title, setTitle] = useState(initialData.title);
   const [content, setContent] = useState(initialData.content);
+
+     const {setAllContents, userContents } =
+       useGlobalContext();
 
   // Synchronize state with initialData when it changes
   useEffect(() => {
     setTitle(initialData.title);
     setContent(initialData.content);
   }, [initialData]);
+
+
+   const updateContent = setAllContents || userContents;
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -58,7 +65,9 @@ const EditModal = ({
 
             <TouchableOpacity
               className="bg-blueGreen p-3 rounded-lg w-1/3"
-              onPress={() => handleUpdate(contentId, { title, content }, type)}
+              onPress={() =>
+                handleUpdate(contentId, { title, content }, type, updateContent)
+              }
             >
               <Text className="text-center text-sm text-white">Save</Text>
             </TouchableOpacity>
