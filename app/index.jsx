@@ -13,7 +13,7 @@ export default function App() {
   if (!isLoading && isLoggedIn) return <Redirect href="/home" />;
 
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-warmGray h-full">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full items-center justify-center min-h-[85vh] px-4">
           <Image
@@ -23,7 +23,7 @@ export default function App() {
           />
           <Image
             source={images.cards}
-            className="max-w-[380px] w-full h-[300px] shadow-xl"
+            className="max-w-[400px] w-full h-[300px] shadow-xl"
             resizeMode="contain"
           />
           <View className="relative mt-5 ">

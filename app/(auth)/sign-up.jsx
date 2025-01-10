@@ -84,7 +84,7 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-warmGray h-full">
       {/* for smooth keyboard interaction. */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

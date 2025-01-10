@@ -49,7 +49,7 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-warmGray h-full">
       <ScrollView>
         <View className="w-full h-full justify-center px-4 my-6">
           <Image

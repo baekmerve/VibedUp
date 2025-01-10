@@ -17,9 +17,9 @@ import { router } from "expo-router";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Create = () => {
+  console.log("Create is being rendered");
   const { user, handleCreatePost, handleCreatVideo } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
-
   const [formType, setFormType] = useState("video");
   const [form, setForm] = useState({
     title: "",
@@ -83,7 +83,7 @@ const Create = () => {
   };
 
   return (
-    <SafeAreaView className="h-full bg-paper">
+    <SafeAreaView className="h-full bg-warmGray">
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-brown font-psemibold">
           Create {formType === "video" ? "Video" : "Post"}

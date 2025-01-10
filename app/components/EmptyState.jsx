@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import React from "react";
+import React, {memo} from "react";
 import { images } from "../../constants";
 import CustomButton from "../components/CustomButton";
 import { router } from "expo-router";
@@ -29,4 +29,4 @@ const EmptyState = ({ title, subtitle }) => {
   );
 };
 
-export default EmptyState;
+export default memo(EmptyState);
