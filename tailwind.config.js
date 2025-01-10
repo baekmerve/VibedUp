@@ -18,7 +18,8 @@ module.exports = {
         brown: "#3e3e3e",
         orange: "#e97451",
         inputBox: "#666363",
-        blueGreen:"#72ACB1"
+        blueGreen:"#72ACB1",
+        warmGray: "#eae4df",
       },
       fontFamily: {
         pthin: ["Poppins-Thin", "sans-serif"],
