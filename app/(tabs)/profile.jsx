@@ -20,36 +20,19 @@ import { router } from "expo-router";
 const Profile = () => {
   const {
     user,
-    savedVideoId,
-    savedPostId,
-    toggleLikeVideo,
-    userPosts,
-    userVideos,
-    fetchUserPostList,
-    fetchUserVideoList,
     deleteContent,
     userLogout,
-    commonRefresh,
     refreshing,
-    menuState,
-    setMenuState,
-    handleToggleMenu,
     updateContent,
-    setUserPosts,
+    fetchUserContents,
+    userContents,
+    setUserContents,
   } = useGlobalContext();
+
+  console.log("Profile is being rendered");
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [userContent, setUserContent] = useState([]);
-
-  useEffect(() => {
-    const combinedContent = [
-      ...userVideos.map((item) => ({ ...item, type: "video" })),
-      ...userPosts.map((item) => ({ ...item, type: "post" })),
-    ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
-
-    setUserContent(combinedContent);
-  }, [userVideos, userPosts]); // Refresh userContent whenever userVideos or userPosts change
 
   const handleEditPress = (item) => {
     setSelectedItem({
@@ -62,41 +45,44 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    if (!user) return; // Exit if no user
     const fetchData = async () => {
       try {
-        await fetchUserPostList(user.$id);
-        await fetchUserVideoList(user.$id);
+        const response = await fetchUserContents(user.$id);
+        if (response?.length > 0) {
+          setUserContents(response);
+        } else {
+          console.warn("No user content found");
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
         alert("Failed to fetch user content.");
       }
     };
 
-    if (user) {
-      fetchData(); // Call the async function only if `user` exists
-    }
-  }, [user]); // Dependency on `user`, ensuring the fetch is triggered when `user` changes.
+    fetchData(); // Call the async function
+  }, []);
 
-  const onRefresh = () => {
-    commonRefresh(async () => {
-      await fetchUserPostList(user.$id);
-      await fetchUserVideoList(user.$id);
-    });
+  const onRefresh = async () => {
+    try {
+      await fetchUserContents(user.$id); // Refresh only user content
+    } catch (error) {
+      console.error("Error refreshing user content:", error);
+    }
   };
 
   // Function to handle edit
-  const handleUpdate = async (contentId, { title, content }, type) => {
+  const handleUpdate = async (
+    contentId,
+    { title, content },
+    type,
+    setUserContents
+  ) => {
     try {
-      await updateContent(contentId, { title, content }, type); // Using the update function from context
-      // Update local user posts state to reflect the changes
-      setUserPosts((prevUserPosts) =>
-        prevUserPosts.map((post) =>
-          post.$id === contentId ? { ...post, title, content } : post
-        )
-      );
-      setMenuState((prev) => ({ ...prev, [contentId]: false })); // Close menu
+      await updateContent(contentId, { title, content }, type, setUserContents);
+
       setModalVisible(false);
-      alert(`${type} updated successfully`);
+       alert(`${type} updated successfully`);
     } catch (error) {
       alert(`Error updating content: ${error.message}`);
     }
@@ -104,10 +90,11 @@ const Profile = () => {
 
   // Function to handle deletion
   const handleDelete = async (contentId, type) => {
-    deleteContent(contentId, type, () => {
-      if (type === "post") fetchUserPostList(user.$id);
-      else fetchUserVideoList(user.$id);
-    });
+    await deleteContent(
+      contentId,
+      type,
+      setUserContents // Pass the state updater function
+    );
   };
 
   const handleLogout = async () => {
@@ -116,9 +103,9 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-[#f2ede8] h-full">
       <FlatList
-        data={userContent}
+        data={userContents}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => {
           if (item.type === "post") {
@@ -133,9 +120,8 @@ const Profile = () => {
                 onDelete={() => handleDelete(item.$id, "post")}
                 onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
-                savedPost={savedPostId.includes(item.$id)}
-                openMenu={menuState[item.$id] || false}
-                onToggleMenu={() => handleToggleMenu(item.$id)}
+                showSaveButton={false}
+                showSettingsButton={true}
               />
             );
           }
@@ -148,24 +134,20 @@ const Profile = () => {
                 thumbnail={item.thumbnail}
                 video={item.video}
                 creatorName={item.creator.username}
-                savedVideo={savedVideoId.includes(item.$id)}
-                onLikeToggle={() => toggleLikeVideo(item.$id)}
                 avatar={item.creator.avatar}
-                openMenu={menuState[item.$id] || false}
-                onToggleMenu={() => handleToggleMenu(item.$id)}
-                showLikeButton={false}
-                showDeleteButton={item.creator.$id === user?.$id}
                 onDelete={() => handleDelete(item.$id, "video")}
                 onEdit={() => handleEditPress(item)}
                 isCreator={item.creator.$id === user?.$id}
+                showSaveButton={false}
+                showSettingsButton={true}
               />
             );
           }
         }}
         ListHeaderComponent={() => (
-          <View className="w-full justify-center items-center mt-6 mb-12 px-4 ">
+          <View className="  w-full justify-center items-center   px-4 ">
             <TouchableOpacity
-              className=" w-full items-end mb-10"
+              className=" w-full items-end mb-5 "
               onPress={handleLogout}
             >
               <View className="flex-row font-bold justify-center items-center gap-2">
@@ -177,32 +159,47 @@ const Profile = () => {
                 />
               </View>
             </TouchableOpacity>
-            <View className=" w-full bg-blueGreen rounded-2xl justify-center items-center ">
+            <View className="mb-5 w-full bg-blueGreen rounded-2xl justify-center items-center ">
               <View className=" mt-3">
-                <Image
-                  source={{ uri: user?.avatar }}
-                  className="w-32 h-32 rounded-full"
-                  resizeMode="cover"
-                />
+                {user?.avatar ? (
+                  <Image
+                    source={{ uri: user?.avatar }}
+                    className="w-32 h-32 rounded-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Image
+                    source={icons.profile2}
+                    className="w-32 h-32 mt-3 border-brown"
+                    resizeMode="cover"
+                  />
+                )}
+
                 <InfoBox
                   title={user?.username}
-                  containerStyles="mt-2"
-                  titleStyles="text-lg"
+                  containerStyles="mt-3"
+                  titleStyles="text-2xl "
                 />
               </View>
 
               <View className="mb-4 flex-row justify-center items-center  align-middle ">
                 <InfoBox
-                  title={userVideos.length || 0}
+                  title={
+                    userContents.filter((item) => item.type === "video")
+                      .length || 0
+                  }
                   subtitle="Videos"
                   containerStyles="mx-5"
-                  titleStyles="text-xl"
+                  titleStyles="text-xl "
                 />
                 <InfoBox
-                  title={userPosts.length || 0}
+                  title={
+                    userContents.filter((item) => item.type === "post")
+                      .length || 0
+                  }
                   subtitle="Posts"
                   containerStyles="mx-5"
-                  titleStyles="text-xl"
+                  titleStyles="text-xl "
                 />
               </View>
             </View>
@@ -224,7 +221,6 @@ const Profile = () => {
           visible={isModalVisible}
           onClose={() => setModalVisible(false)}
           type={selectedItem.type}
-          setMenuState={setMenuState}
           handleUpdate={handleUpdate}
           initialData={{
             title: selectedItem?.title || "",

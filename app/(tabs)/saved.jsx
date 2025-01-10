@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image, RefreshControl } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../components/SearchInput";
 import VideoCard from "../components/VideoCard";
@@ -10,48 +10,44 @@ import PostCard from "../components/PostCard";
 const Saved = () => {
   const {
     user,
-    toggleLikeVideo,
-    toggleLikePost,
-    fetchUserLikedVideos,
-    fetchUserLikedPosts,
-    likedVideoList,
-    likedPostList,
-    savedVideoId,
-    savedPostId,
-    commonRefresh,
+    toggleSaveContent,
+    savedContentId,
     refreshing,
+    fetchUserSavedContent,
+    savedContents,
+    setSavedContents,
   } = useGlobalContext();
 
-  const userContent = [
-    ...likedVideoList.map((item) => ({ ...item, type: "video" })),
-    ...likedPostList.map((item) => ({ ...item, type: "post" })),
-  ].sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt));
-
-  const onRefresh = () => {
-    commonRefresh(async () => {
-      await fetchUserLikedVideos(user.$id);
-      await fetchUserLikedPosts(user.$id);
-    });
-  };
+  console.log("savedContentId", savedContentId);
 
   useEffect(() => {
+    if (!user) return; // Exit if no user
     const fetchData = async () => {
       try {
-        await fetchUserLikedVideos();
-        await fetchUserLikedPosts();
+        const response = await fetchUserSavedContent(user.$id);
+        if (response?.length > 0) {
+          setSavedContents(response);
+        } else {
+          console.warn("No user saved content found");
+        }
       } catch (error) {
-        console.error("Error fetching saved data:", error);
-        alert("Failed to fetch saved content.");
+        console.error("Error fetching user  saved data:", error);
+        alert("Failed to fetch user saved content.");
       }
     };
 
     fetchData(); // Call the async function
-  }, []); // Only run once on mount since it doesn’t have dependencies.
+  }, []);
+
+  const onRefresh = () => {
+    fetchUserSavedContent(user.$id);
+  };
+
 
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-warmGray h-full">
       <FlatList
-        data={userContent}
+        data={savedContents}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => {
           if (item.type === "post") {
@@ -63,9 +59,10 @@ const Saved = () => {
                 creatorName={item.creator.username}
                 coverImage={item.thumbnail}
                 avatar={item.creator.avatar}
-                onLikeToggle={() => toggleLikePost(item.$id)}
-                savedPost={savedPostId.includes(item.$id)}
-                showLikeButton={true}
+                onLikeToggle={() => toggleSaveContent(item.$id, "post")}
+                savedContent={savedContentId.includes(item.$id)}
+                showSaveButton={true}
+                showSettingsButton={false}
               />
             );
           }
@@ -79,20 +76,29 @@ const Saved = () => {
                 video={item.video}
                 creatorName={item.creator.username}
                 avatar={item.creator.avatar}
-                savedVideo={savedVideoId.includes(item.$id)}
-                onLikeToggle={() => toggleLikeVideo(item.$id)}
-                showLikeButton={true}
+                savedContent={savedContentId.includes(item.$id)}
+                onLikeToggle={() => toggleSaveContent(item.$id, "video")}
+                showSaveButton={true}
+                showSettingsButton={false}
               />
             );
           }
         }}
         ListHeaderComponent={() => (
-          <View className="mt-6 mb-2 px-4">
-            <Text className="text-2xl text-gray-700 font-psemibold">
-              Saved Videos & Posts
+          <View className="my-2 px-4">
+            <Text className="text-2xl mb-2 text-brown font-psemibold">
+              Saved Contents
             </Text>
+            <View className="flex-row items-center">
+              <Text className="text-sm mt-3 mb-2 font-semibold text-brown pb-1 ">
+                Your total saved content:
+              </Text>
+              <Text className="text-2xl text-orange ml-2 font-psemibold">
+                {savedContents?.length}
+              </Text>
+            </View>
 
-            <View className="mt-6 mb-8 ">
+            <View className="mt-3 ">
               <SearchInput />
             </View>
           </View>

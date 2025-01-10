@@ -1,26 +1,24 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchInput from "../components/SearchInput";
 import EmptyState from "../components/EmptyState";
 import VideoCard from "../components/VideoCard";
 import PostCard from "../components/PostCard";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { icons } from "../../constants";
 
 const Search = () => {
   const { query } = useLocalSearchParams();
 
   const {
-    toggleLikeVideo,
-    toggleLikePost,
-    savedVideoId,
-    savedPostId,
+    savedContentId,
     searchPostResult,
     searchVideoResult,
     fetchSearchVideos,
     fetchSearchPosts,
-    refreshing,
+    toggleSaveContent,
   } = useGlobalContext();
 
   const userContent = [
@@ -31,21 +29,30 @@ const Search = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!refreshing) {
-          await fetchSearchVideos(query);
-          await fetchSearchPosts(query);
+        console.log("Searching for:", query);
+
+        if (!query) {
+          console.error("Missing search parameters");
+          return;
         }
+
+        await fetchSearchVideos(query);
+        await fetchSearchPosts(query);
       } catch (error) {
         console.error("Error fetching search data:", error);
         alert("Failed to fetch search content.");
       }
     };
-
-    fetchData(); // Call the async function
+    // Call the async function
+    if (query) fetchData();
   }, [query]);
 
+   const handleBackToHome = () => {
+     router.push("/"); // Navigate to the Home screen
+   };
+
   return (
-    <SafeAreaView className="bg-paper h-full">
+    <SafeAreaView className="bg-warmGray h-full">
       <FlatList
         data={userContent}
         keyExtractor={(item) => item.$id}
@@ -60,8 +67,8 @@ const Search = () => {
                 video={item.video}
                 creatorName={item.creator.username}
                 avatar={item.creator.avatar}
-                savedVideo={savedVideoId.includes(item.$id)}
-                onLikeToggle={() => toggleLikeVideo(item.$id)}
+                savedContent={savedContentId.includes(item.$id)}
+                onLikeToggle={() => toggleSaveContent(item.$id, "video")}
               />
             );
           }
@@ -74,15 +81,22 @@ const Search = () => {
                 creatorName={item.creator.username}
                 avatar={item.creator.avatar}
                 coverImage={item.thumbnail}
-                onLikeToggle={() => toggleLikePost(item.$id)}
-                savedPost={savedPostId.includes(item.$id)}
+                onLikeToggle={() => toggleSaveContent(item.$id, "post")}
+                savedContent={savedContentId.includes(item.$id)}
               />
             );
           }
         }}
         ListHeaderComponent={() => (
           <View className="my-6 px-4">
-            <Text className="font-pmedium text-sm text-brown">
+            <TouchableOpacity onPress={handleBackToHome}>
+              <Image
+                source={icons.leftArrow}
+                resizeMode="contain"
+                className="w-5 h-5 mb-3"
+              />
+            </TouchableOpacity>
+            <Text className="font-pmedium text-sm text-brown ">
               Search results for:
             </Text>
             <Text className=" mt-2 text-2xl font-psemibold text-brown">
