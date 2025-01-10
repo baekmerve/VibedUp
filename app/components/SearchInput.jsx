@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   Image,
@@ -15,11 +14,9 @@ const SearchInput = ({ initialQuery }) => {
   const [query, setQuery] = useState(initialQuery || "");
 
   const handleSearchPress = () => {
-    if (!query) {
-      return Alert.alert(
-        "Missing query",
-        "Please input something to search results across the database"
-      );
+    if (!query.trim()) {
+      Alert.alert("Missing query", "Please input something to search.");
+      return;
     }
     if (pathname.startsWith("/search")) {
       // Update params if already on search page
@@ -30,6 +27,12 @@ const SearchInput = ({ initialQuery }) => {
     }
   };
 
+  const handleTextChange = (text) => {
+    if (text !== query) {
+      setQuery(text);
+    }
+  };
+
   return (
     <View className=" w-full h-16 px-4 bg-brown rounded-2xl items-center flex-row space-x-4">
       <TextInput
@@ -37,7 +40,7 @@ const SearchInput = ({ initialQuery }) => {
         value={query}
         placeholder="Search for a video"
         placeholderTextColor="#DADADA"
-        onChangeText={(e) => setQuery(e)}
+        onChangeText={handleTextChange}
       />
       <TouchableOpacity onPress={handleSearchPress}>
         <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
